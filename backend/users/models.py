@@ -90,4 +90,8 @@ class Subscription(models.Model):
         """Запрет подписки на самого себя."""
         super().clean()
         if self.subscriber == self.author:
-            raise ValidationError("Нельзя подписываться на самого себя.")
+            raise ValidationError('Нельзя подписываться на самого себя.')
+        if Subscription.objects.filter(
+            subscriber=self.subscriber, author=self.author
+        ).exists():
+            raise ValidationError('Вы уже подписаны на этого автора.')
