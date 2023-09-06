@@ -4,6 +4,7 @@ from .validators import (
 )
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 
 
 class CustomUser(AbstractUser):
@@ -44,7 +45,49 @@ class CustomUser(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ['id']
+        ordering = ['username']
+        constraints = [
+            models.UniqueConstraint(
+                fields=('username', 'email'),
+                name='usrname_email_constraint'
+            ),
+        ]
 
     def __str__(self) -> str:
         return f'{self.username}: {self.email}'
+
+
+class Subscription(models.Model):
+    """Модель подписчиков."""
+
+    author = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        verbose_name='Автор',
+        related_name='subscribing',
+    )
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        verbose_name='Подписчик',
+        related_name='subscriber',
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата подписки',
+    )
+
+    class Meta:
+        verbose_name = 'Подписчик'
+        verbose_name_plural = 'Подписчики'
+        ordering = ['-pub_date']
+        unique_together = ['author', 'user']
+
+    def __str__(self) -> str:
+        return f'{self.user.username} подписан на {self.author.username}.'
+
+    def clean(self):
+        """Запрет подписки на самого себя."""
+        super().clean()
+        if self.subscriber == self.author:
+            raise ValidationError("Нельзя подписываться на самого себя.")

@@ -1,42 +1,65 @@
+from .models import (
+    Favorite, Ingredient,
+    Recipe, ShoppingCart,
+    AmountRecipeIngredients, Tag
+)
 from django.contrib import admin
-from django.contrib.admin import display
-
-from .models import (Favorite, Ingredient, AmountRecipeIngredients, Recipe,
-                     DownloadShoppingCard, Tag)
 
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'id', 'author', 'added_in_favorites')
-    readonly_fields = ('added_in_favorites',)
-    list_filter = ('author', 'name', 'tags',)
+    """Администрирование рецептов."""
 
-    @display(description='Количество в избранных')
-    def added_in_favorites(self, obj):
-        return obj.favorites.count()
+    list_display = (
+        'name', 'id', 'author',
+        'add_in_favorite',
+    )
+    readonly_fields = ['add_in_favorite']
+    list_filter = ('author', 'name', 'tags',)
+    search_fields = ['author__username']
+    raw_id_fields = ['author']
+
+    @admin.display(description='Количество в избранных')
+    def add_in_favorite(self, obj):
+        return obj.favorite.count()
 
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
+    """Администрирование ингредиентов."""
+
     list_display = ('name', 'measurement_unit',)
-    list_filter = ('name',)
+    list_filter = ['name']
+    search_fields = ['name']
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
+    """Администрирование тегов."""
+
     list_display = ('name', 'color', 'slug',)
+    search_fields = ['name']
 
 
-@admin.register(DownloadShoppingCard)
-class DownloadShoppingCardAdmin(admin.ModelAdmin):
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    """Администрирование списка покупок."""
+
     list_display = ('user', 'recipe',)
 
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
+    """Администрирование избранных рецептов."""
+
     list_display = ('user', 'recipe',)
+    search_fields = ['user__username', 'recipe__title']
 
 
 @admin.register(AmountRecipeIngredients)
 class AmountRecipeIngredientsAdmin(admin.ModelAdmin):
+    """Администрирование общего количесвта ингридиентов."""
+
     list_display = ('recipe', 'ingredients', 'amount',)
+    list_filter = ['recipe', 'ingredients']
+    search_fields = ['recipe__title', 'ingredient__name']
