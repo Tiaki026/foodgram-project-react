@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from recipes.models import AmountRecipeIngredients, Ingredient, Recipe, Tag
+from recipes.models import (
+    AmountRecipeIngredients, Ingredient, Recipe, Tag, User
+)
 from users.models import Subscription
 
 
@@ -44,5 +46,14 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscription
+        fields = '__all__'
+        read_only_fields = ['__all__']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор пользователя."""
+
+    class Meta:
+        model = User
         fields = '__all__'
         read_only_fields = ['__all__']
