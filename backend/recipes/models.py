@@ -1,8 +1,7 @@
 from .validators import validate_tag, validate_hex_color
 from django.db import models
-from django.core.validators import MinValueValidator
 from django.contrib.auth import get_user_model
-
+from django.core.validators import MinValueValidator
 
 User = get_user_model()
 
@@ -55,11 +54,7 @@ class Ingredient(models.Model):
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
         ordering = ['name']
-        constraints = [models.UniqueConstraint(
-            fields=('name', 'measurement_unit'),
-            name='unique_for_ingredient',
-            )
-        ]
+        unique_together = [('name', 'measurement_unit')]
 
     def __str__(self) -> str:
         return f'{self.name} {self.measurement_unit}'
@@ -90,6 +85,7 @@ class Recipe(models.Model):
         verbose_name='Список тегов',
     )
     image = models.ImageField(
+        on_delete=models.CASCADE,
         verbose_name='Картинка, закодированная в Base64',
         upload_to='recipes/',
     )
@@ -110,18 +106,14 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
         ordering = ['-id']
-        constraints = [models.UniqueConstraint(
-                fields=('name', 'author'),
-                name='unique_for_author',
-            )
-        ]
+        unique_together = [('name', 'author')]
 
     def __str__(self) -> str:
         return f'{self.name} {self.author.username}'
 
 
 class AmountRecipeIngredients(models.Model):
-    """Общее количество ингредиентов в рецепте."""
+    """Количество ингредиентов в рецепте."""
 
     recipe = models.ForeignKey(
         Recipe,
@@ -142,18 +134,14 @@ class AmountRecipeIngredients(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Общее количество ингредиентов в рецепте'
-        verbose_name_plural = 'Общее количество ингредиентов в рецептах'
+        verbose_name = 'Количество ингредиентов в рецепте'
+        verbose_name_plural = 'Количество ингредиентов в рецептах'
         ordering = ['recipe']
-        constraints = [models.UniqueConstraint(
-                fields=('recipe', 'ingredients'),
-                name='unique_ingredients'
-            )
-        ]
+        unique_together = [('recipe', 'ingredients')]
 
     def __str__(self) -> str:
         return (
-            f'{self.amount} > {self.ingredients.measurement_unit}'
+            f'{self.amount} -> {self.ingredients.measurement_unit}'
         )
 
 
@@ -176,11 +164,7 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
-        constraints = [models.UniqueConstraint(
-            fields=('user', 'recipe'),
-            name='unique_favorite'
-            )
-        ]
+        unique_together = [('user', 'recipe')]
 
     def __str__(self) -> str:
         return f'Пользователь {self.user} добавил в избраное {self.recipe}.'
@@ -205,11 +189,7 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
-        constraints = [models.UniqueConstraint(
-            fields=['user', 'recipe'],
-            name='unique_shopping'
-            )
-        ]
+        unique_together = [('user', 'recipe')]
 
     def __str__(self) -> str:
         return (

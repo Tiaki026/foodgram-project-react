@@ -46,12 +46,7 @@ class CustomUser(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
         ordering = ['username']
-        constraints = [
-            models.UniqueConstraint(
-                fields=('username', 'email'),
-                name='usrname_email_constraint'
-            ),
-        ]
+        unique_together = [('username', 'email')]
 
     def __str__(self) -> str:
         return f'{self.username}: {self.email}'
@@ -81,17 +76,7 @@ class Subscription(models.Model):
         verbose_name = 'Подписчик'
         verbose_name_plural = 'Подписчики'
         ordering = ['-pub_date']
-        unique_together = ['author', 'user']
+        unique_together = [('author', 'user')]
 
     def __str__(self) -> str:
         return f'{self.user.username} подписан на {self.author.username}.'
-
-    def clean(self):
-        """Запрет подписки на самого себя."""
-        super().clean()
-        if self.subscriber == self.author:
-            raise ValidationError('Нельзя подписываться на самого себя.')
-        if Subscription.objects.filter(
-            subscriber=self.subscriber, author=self.author
-        ).exists():
-            raise ValidationError('Вы уже подписаны на этого автора.')
