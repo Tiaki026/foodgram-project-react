@@ -27,8 +27,8 @@ services:
       - SECRET_KEY
       - DEBUG
     volumes:
-      - static:/static
-      - media:/media
+      - static:/app/static
+      - media:/app/media
   
   frontend:
     build:
