@@ -85,7 +85,6 @@ class Recipe(models.Model):
         verbose_name='Список тегов',
     )
     image = models.ImageField(
-        on_delete=models.CASCADE,
         verbose_name='Картинка, закодированная в Base64',
         upload_to='recipes/',
     )
