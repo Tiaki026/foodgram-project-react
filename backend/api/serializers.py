@@ -5,6 +5,7 @@ from recipes.models import (
 from users.models import Subscription
 from drf_extra_fields.fields import Base64ImageField
 from django.db.models import F
+from djoser.serializers import UserSerializer, UserCreateSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -25,47 +26,45 @@ class IngredientSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
-# class UserCreateSerializer(serializers.UserSerializer):
+class CreateCustomUserSerializer(UserCreateSerializer):
+    """Создание пользователя."""
 
-#     class Meta:
-#         model = User
-#         fields = [
-#             'id', 'username', 'email', 'first_name',
-#             'last_name', 'password'
-#         ]
-#         extra_kwargs = {'password': {'write_only': True}}
+    class Meta:
+        model = User
+        fields = [
+            'username', 'email', 'first_name',
+            'last_name', 'password'
+        ]
+        extra_kwargs = {'password': {'write_only': True}}
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(UserSerializer):
     """Сериализатор пользователя."""
 
-    is_subscribe = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta():
         model = User
-        fields = [
-            'id', 'username', 'email', 'first_name',
-            'last_name', 'password', 'is_subscribe'
-        ]
-        read_only_fields = ['id', 'is_subscribe']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = '__all__'
+        extra_fields = ['is_subscribed']
+        read_only_fields = ['id', 'is_subscribed']
 
-    def create(self, validated_data):
-        """Создание пользователя."""
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
-        )
-        return user
+    # def create(self, validated_data):
+    #     """Создание пользователя."""
+    #     user = User.objects.create_user(
+    #         username=validated_data['username'],
+    #         email=validated_data['email'],
+    #         password=validated_data['password'],
+    #         first_name=validated_data['first_name'],
+    #         last_name=validated_data['last_name']
+    #     )
+    #     return user
 
-    def get_is_subscribe(self, obj):
+    def get_is_subscribed(self, obj):
         """Проверка подписки пользователя."""
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return request.user in obj.subscribe.all()
+            return request.user in obj.subscribed.all()
         return False
 
 
@@ -173,7 +172,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return ingredients
 
 
-class SubscriptionSerializer(UserSerializer):
+class SubscriptionSerializer(CustomUserSerializer):
     """Сериализатор подписок."""
 
     recipe = RecipeSerializer(many=True, read_only=True)
@@ -182,7 +181,7 @@ class SubscriptionSerializer(UserSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        extra_fields = ['recipe', 'recipes_count']
+        extra_fields = ['recipes', 'recipes_count', 'is_subscribed']
         read_only_fields = ['username', 'email']
 
     def create(self, validated_data):

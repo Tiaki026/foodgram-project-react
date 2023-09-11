@@ -14,7 +14,6 @@ from .serializers import (
 )
 from recipes.models import Ingredient, Recipe, Tag, User
 from users.models import Subscription
-from .mixins import M2MAddDelMixin
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action

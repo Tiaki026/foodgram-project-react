@@ -1,9 +1,9 @@
 # flake8: noqa
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -130,10 +130,10 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'SERIALIZERS': {
-        'user': 'api.serializers.UserSerializer',
-        'user_list': 'api.serializers.UserSerializer',
-        'current_user': 'api.serializers.UserSerializer',
-        'user_create': 'api.serializers.UserSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'user_list': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
+        'user_create': 'api.serializers.CreateCustomUserSerializer',
     },
 
     'PERMISSIONS': {

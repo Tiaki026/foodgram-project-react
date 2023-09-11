@@ -11,17 +11,16 @@ class RecipeAdmin(admin.ModelAdmin):
     """Администрирование рецептов."""
 
     list_display = (
-        'name', 'id', 'author',
-        'add_in_favorite',
+        'name', 'author', 'in_favorite',
     )
-    readonly_fields = ['add_in_favorite']
     list_filter = ('author', 'name', 'tags',)
-    search_fields = ['author__username']
+    search_fields = ['author__username', 'name']
     raw_id_fields = ['author']
 
-    @admin.display(description='Количество в избранных')
-    def add_in_favorite(self, obj):
+    @admin.display()
+    def in_favorite(self, obj):
         return obj.favorite.count()
+    in_favorite.short_description = 'В избранном'
 
 
 @admin.register(Ingredient)
