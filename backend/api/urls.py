@@ -13,5 +13,5 @@ router.register(r'tag', TagViewSet, basename='tag')
 
 urlpatterns = (
     path('', include(router.urls)),
-    path('auth/', include('djoser.urls.authtoken')),
+    path(r'auth/', include('djoser.urls.authtoken')),
 )

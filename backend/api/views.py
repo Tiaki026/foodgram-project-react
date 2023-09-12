@@ -1,24 +1,22 @@
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import render
 
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from django_filters.rest_framework import DjangoFilterBackend
 from .generator import IngredientsFileGenerator
 from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
 from .serializers import (
     SubscriptionSerializer, TagSerializer,
-    RecipeSerializer,
-    IngredientSerializer, UserSerializer
+    RecipeSerializer, IngredientSerializer,
+    CustomUserSerializer
 )
+from .paginator import CustomUserPagination
+from djoser.views import UserViewSet
 from recipes.models import Ingredient, Recipe, Tag, User
 from users.models import Subscription
-from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import DjangoModelPermissions
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -121,18 +119,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response({'message': 'Пусто.'})
 
 
-class UserViewSet(
-    viewsets.ModelViewSet,
-    mixins.CreateModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin
-):
+class UserViewSet(UserViewSet):
     """Вьюсет пользователя."""
 
     queryset = User.objects.all()
-    serializer_class = SubscriptionSerializer
-    permission_classes = [DjangoModelPermissions]
-    link_model = Subscription
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthorOrAdminOrReadOnly]
+    pagination_class = CustomUserPagination
 
     @action(
         detail=True, methods=['post'],
@@ -169,7 +162,9 @@ class UserViewSet(
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    @action(
+        detail=False, methods=['get'], permission_classes=[IsAuthenticated]
+    )
     def subscription(self, request):
         """Подписка."""
         subscriptions = Subscription.objects.filter(user=request.user)

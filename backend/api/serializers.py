@@ -37,6 +37,18 @@ class CreateCustomUserSerializer(UserCreateSerializer):
         ]
         extra_kwargs = {'password': {'write_only': True}}
 
+    def validate(self, data):
+        """Проверка регистрации пользователя."""
+        if data['username'] == 'me':
+            raise serializers.ValidationError(
+                'Это имя уже занято'
+            )
+        if data['email'] == data['username']:
+            raise serializers.ValidationError(
+                'Поля не должны совпадать'
+            )
+        return data
+
 
 class CustomUserSerializer(UserSerializer):
     """Сериализатор пользователя."""
@@ -45,39 +57,18 @@ class CustomUserSerializer(UserSerializer):
 
     class Meta():
         model = User
-        fields = '__all__'
-        extra_fields = ['is_subscribed']
-        read_only_fields = ['id', 'is_subscribed']
-
-    # def create(self, validated_data):
-    #     """Создание пользователя."""
-    #     user = User.objects.create_user(
-    #         username=validated_data['username'],
-    #         email=validated_data['email'],
-    #         password=validated_data['password'],
-    #         first_name=validated_data['first_name'],
-    #         last_name=validated_data['last_name']
-    #     )
-    #     return user
+        fields = [
+            'id', 'username', 'email',
+            'first_name', 'last_name',
+            'is_subscribed'
+        ]
 
     def get_is_subscribed(self, obj):
         """Проверка подписки пользователя."""
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return request.user in obj.subscribed.all()
+            return request.user in obj.subscribing.all()
         return False
-
-
-# class AmountRecipeIngredientsSerializer(serializers.ModelSerializer):
-#     """Сериализатор общего количества ингредиентов в рецепте."""
-
-#     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
-#     ingredients = serializers.PrimaryKeyRelatedField(read_only=True)
-
-#     class Meta:
-#         model = AmountRecipeIngredients
-#         fields = ['id', 'amount']
-#         read_only_fields = ['id']
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -181,7 +172,7 @@ class SubscriptionSerializer(CustomUserSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        extra_fields = ['recipes', 'recipes_count', 'is_subscribed']
+        extra_fields = ['recipes', 'recipes_count']
         read_only_fields = ['username', 'email']
 
     def create(self, validated_data):

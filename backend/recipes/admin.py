@@ -19,7 +19,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display()
     def in_favorite(self, obj):
-        return obj.favorite.count()
+        return obj.in_favorite.count()
     in_favorite.short_description = 'В избранном'
 
 
