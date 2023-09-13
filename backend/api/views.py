@@ -17,6 +17,11 @@ from users.models import Subscription
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.shortcuts import render
+from import_export.formats import base_formats
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+from .resources import IngredientResource
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -171,15 +176,13 @@ class UserViewSet(UserViewSet):
         serializer = SubscriptionSerializer(subscriptions, many=True)
         return Response(serializer.data)
 
-# class UserViewSet(views.UserViewSet):
-#     """Вьюсет пользователя."""
-
-#     queryset = User.objects.all()
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = UserListSerializer
-
-#     def get_serializer_class(self):
-#         if self.action == 'list':
-#             return SubscriptionSerializer
-#         return UserListSerializer
-    
+def import_data(request):
+    if request.method == 'POST':
+        resource = IngredientResource()
+        dataset = resource.import_data(request.FILES['file'])
+        if dataset.has_errors():
+            errors = dataset.row_errors()
+            return render(request, 'import_error.html', {'errors': errors})
+        else:
+            return render(request, 'import_success.html')
+    return render(request, 'import.html')
