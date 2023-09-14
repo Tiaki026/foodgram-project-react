@@ -1,0 +1,29 @@
+[
+    {
+        "model": "recipes.tag",
+        "pk": 1,
+        "fields": {
+            "name": "завтрак",
+            "color": "#FFA500",
+            "slug": "breakfast"
+        }
+    },
+    {
+        "model": "recipes.tag",
+        "pk": 2,
+        "fields": {
+            "name": "обед",
+            "color": "#008B8B",
+            "slug": "dinner"
+        }
+    },
+    {
+        "model": "recipes.tag",
+        "pk": 3,
+        "fields": {
+            "name": "ужин",
+            "color": "#800080",
+            "slug": "evening meal"
+        }
+    }
+]

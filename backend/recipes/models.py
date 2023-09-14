@@ -32,7 +32,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
-        ordering = ['name']
+        ordering = ['id']
 
     def __str__(self) -> str:
         return f'Тег {self.name} {self.color}'
@@ -53,8 +53,8 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-        ordering = ['name']
-        unique_together = [('name', 'measurement_unit')]
+        ordering = ['id']
+        # unique_together = [('name', 'measurement_unit')]
 
     def __str__(self) -> str:
         return f'{self.name} {self.measurement_unit}'
