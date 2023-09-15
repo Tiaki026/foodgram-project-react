@@ -23,7 +23,7 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ['id', 'name', 'measurement_unit']
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'name', 'measurement_unit']
 
 
 class CreateCustomUserSerializer(UserCreateSerializer):
@@ -78,46 +78,47 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True)
     image = Base64ImageField()
-    favorite = serializers.SerializerMethodField()
-    shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = [
             'id', 'name', 'author', 'ingredients',
             'tags', 'image', 'text', 'cooking_time',
-            'pub_date', 'favorite', 'shopping_cart'
+            'pub_date', 'is_favorited', 'is_in_shopping_cart'
         ]
-        read_only_fields = ['id', 'author', 'is_favorite', 'is_shopping_cart']
+        read_only_fields = [
+            'author', 'is_favorited', 'is_in_shopping_cart'
+        ]
+
+    @staticmethod
+    def ingredients_set(recipe, ingredients):
+        """Список ингредиентов."""
+        amount_ingredients = [
+            AmountRecipeIngredients(
+                ingredients=ingredients,
+                recipe=recipe,
+                amount=ingredient['amount'],
+            ) for ingredient in ingredients
+        ]
+        AmountRecipeIngredients.objects.bulk_create(amount_ingredients)
 
     def create(self, validated_data):
         """Создание рецепта."""
-        tags_data = validated_data.pop('tags', [])
-        ingredients_data = validated_data.pop('ingredients', [])
-        amount_data = validated_data.pop('amount')
-
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
 
-        for tag_data in tags_data:
-            tag, _ = Tag.objects.get_or_create(**tag_data)
-            recipe.tags.add(tag)
-
-        for ingredient_data in ingredients_data:
-            ingredient, _ = Ingredient.objects.get_or_create(**ingredient_data)
-            recipe.ingredients.add(ingredient)
-
-        AmountRecipeIngredients.objects.create(
-            recipe=recipe,
-            ingredients=ingredient,
-            amount=amount_data
-        )
+        recipe.tags.set(tags)
+        self.ingredients_set(recipe, ingredients)
 
         return recipe
 
     def update(self, instance, validated_data):
         """Обновление рецепта."""
-        tags_data = validated_data.pop('tags', [])
-        ingredients_data = validated_data.pop('ingredients', [])
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients', None)
 
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
@@ -127,38 +128,32 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.image = validated_data.get('image', instance.image)
 
         instance.tags.clear()
-        for tag_data in tags_data:
-            tag, _ = Tag.objects.get_or_create(**tag_data)
-            instance.tags.add(tag)
-
+        instance.tags.set(tags)
         instance.ingredients.clear()
-        for ingredient_data in ingredients_data:
-            ingredient, _ = Ingredient.objects.get_or_create(**ingredient_data)
-            instance.ingredients.add(ingredient)
-
+        self.ingredients_set(instance, ingredients)
         instance.save()
 
         return instance
 
-    def get_favorite(self, obj):
+    def get_is_favorited(self, obj):
         """Находится ли рецепт в избраном."""
         user = self.context['request'].user
         if user.is_authenticated:
-            return obj.is_favorite(user)
+            return obj.favorited(user)
         return False
 
-    def get_shopping_cart(self, obj):
+    def get_is_in_shopping_cart(self, obj):
         """Находится ли рецепт в списке покупок."""
         user = self.context['request'].user
         if user.is_authenticated:
-            return obj.is_shopping_cart(user)
+            return obj.shopping(user)
         return False
 
     def get_ingredients(self, obj):
-        """Список ингредиентов."""
+        """Получение ингредиентов."""
         ingredients = obj.ingredients.values(
             'id', 'name', 'measurement_unit',
-            amount=F('amountrecipeingredients__amount')
+            amount=F('ingredients_amount__amount')
         )
         return ingredients
 
@@ -194,4 +189,4 @@ class SubscriptionSerializer(CustomUserSerializer):
 
     def get_recipes_count(self, obj):
         """Количесвтво рецептов."""
-        return Recipe.objects.filter(user=obj).count()
+        return obj.recipe.count()

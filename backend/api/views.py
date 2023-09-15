@@ -17,11 +17,6 @@ from users.models import Subscription
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import render
-from import_export.formats import base_formats
-from import_export import resources
-from import_export.admin import ImportExportModelAdmin
-from .resources import IngredientResource
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -40,16 +35,9 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
     @action(detail=False, methods=['get'])
-    def ingredient_search(self, request):
+    def ingredient_search(query):
         """Поиск ингредиентов."""
-        query = request.GET.get('q')
-        if query:
-            ingredients = Ingredient.objects.filter(Q(name__icontains=query))
-        else:
-            ingredients = Ingredient.objects.all()
-
-        serializer = IngredientSerializer(ingredients, many=True)
-        return Response(serializer.data)
+        return Ingredient.objects.filter(name__startswith=query)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -58,6 +46,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.select_related('author')
     serializer_class = RecipeSerializer
     permission_classes = [IsAuthorOrAdminOrReadOnly]
+
+    # @action(detail=False, methods=['post'])
+    def create(self, validated_data):
+        """Создание рецепта."""
+        tags = validated_data.pop('tags')
+        ingredients_query = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+
+        recipe.tags.set(tags)
+
+        ingredients = Ingredient.objects.filter(name__in=ingredients_query)
+        self.ingredients_set(recipe, ingredients)
+
+        return recipe
 
     def download_ingredients(request, format):
         """Скачивание файла с ингредиентами в нескольких форматах."""
@@ -78,10 +80,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True, methods=['post'], permission_classes=[IsAuthenticated]
     )
-    def add_to_favorite(self, request, pk=None):
+    def add_to_favorited(self, request, pk):
         """Добавление в избранное."""
         recipe = self.get_object()
-        request.user.favorite.add(recipe)
+        request.user.favorited.add(recipe)
         return Response({
             'message': f'Рецепт {recipe.pk} добавлен в избранное.'
         })
@@ -89,10 +91,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True, methods=['post'], permission_classes=[IsAuthenticated]
     )
-    def remove_from_favorite(self, request, pk=None):
+    def remove_from_favorited(self, request, pk):
         """Удаление из избранного."""
         recipe = self.get_object()
-        request.user.favorite.remove(recipe)
+        request.user.favorited.remove(recipe)
         return Response({
             'message': f'Рецепт {recipe.pk} удалён из избранного.'
         })
@@ -105,7 +107,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_ids = request.data.get('recipe_ids')
         if recipe_ids:
             recipes = Recipe.objects.filter(id__in=recipe_ids)
-            request.user.shopping_cart.recipes.add(*recipes)
+            request.user.shopping.recipes.add(*recipes)
             return Response({'message': 'Рецепт добавлен в список покупок.'})
         else:
             return Response({'message': 'Пусто.'})
@@ -118,7 +120,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_ids = request.data.get('recipe_ids')
         if recipe_ids:
             recipes = Recipe.objects.filter(id__in=recipe_ids)
-            request.user.shopping_cart.recipes.remove(*recipes)
+            request.user.shopping.recipes.remove(*recipes)
             return Response({'message': 'Рецепт удален из списка покупок.'})
         else:
             return Response({'message': 'Пусто.'})
@@ -175,14 +177,3 @@ class UserViewSet(UserViewSet):
         subscriptions = Subscription.objects.filter(user=request.user)
         serializer = SubscriptionSerializer(subscriptions, many=True)
         return Response(serializer.data)
-
-def import_data(request):
-    if request.method == 'POST':
-        resource = IngredientResource()
-        dataset = resource.import_data(request.FILES['file'])
-        if dataset.has_errors():
-            errors = dataset.row_errors()
-            return render(request, 'import_error.html', {'errors': errors})
-        else:
-            return render(request, 'import_success.html')
-    return render(request, 'import.html')

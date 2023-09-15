@@ -11,16 +11,15 @@ class RecipeAdmin(admin.ModelAdmin):
     """Администрирование рецептов."""
 
     list_display = (
-        'name', 'author', 'in_favorite',
+        'name', 'author', 'in_favorited',
     )
     list_filter = ('author', 'name', 'tags',)
-    search_fields = ['author__username', 'name']
+    search_fields = ['author__username', 'name', 'tags__name']
     raw_id_fields = ['author']
 
     @admin.display()
-    def in_favorite(self, obj):
-        return obj.in_favorite.count()
-    in_favorite.short_description = 'В избранном'
+    def in_favorited(self, obj):
+        return obj.favorited.count()
 
 
 @admin.register(Ingredient)
@@ -52,7 +51,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     """Администрирование избранных рецептов."""
 
     list_display = ('user', 'recipe',)
-    search_fields = ['user__username', 'recipe__title']
+    search_fields = ['user__username', 'recipe__name']
 
 
 @admin.register(AmountRecipeIngredients)
@@ -61,4 +60,4 @@ class AmountRecipeIngredientsAdmin(admin.ModelAdmin):
 
     list_display = ('recipe', 'ingredients', 'amount',)
     list_filter = ['recipe', 'ingredients']
-    search_fields = ['recipe__title', 'ingredient__name']
+    search_fields = ['recipe__name', 'ingredient__name']
