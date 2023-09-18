@@ -3,6 +3,7 @@ from .models import (
     Recipe, ShoppingCart,
     AmountRecipeIngredients, Tag
 )
+from .forms import RecipeForm
 from django.contrib import admin
 
 
@@ -11,15 +12,16 @@ class RecipeAdmin(admin.ModelAdmin):
     """Администрирование рецептов."""
 
     list_display = (
-        'name', 'author', 'in_favorited',
+        'name', 'id', 'author', 'is_favorited',
     )
     list_filter = ('author', 'name', 'tags',)
     search_fields = ['author__username', 'name', 'tags__name']
     raw_id_fields = ['author']
+    form = RecipeForm
 
     @admin.display()
-    def in_favorited(self, obj):
-        return obj.favorited.count()
+    def is_favorited(self, obj):
+        return obj.in_favorited.count()
 
 
 @admin.register(Ingredient)

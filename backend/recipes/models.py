@@ -81,10 +81,10 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         related_name='recipe',
-        verbose_name='Список тегов',
+        verbose_name='Теги',
     )
     image = models.ImageField(
-        verbose_name='Картинка, закодированная в Base64',
+        verbose_name='Картинка',
         upload_to='recipes/',
     )
     text = models.TextField(
@@ -156,7 +156,7 @@ class Favorite(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Избранный рецепт',
-        related_name='favorited',
+        related_name='in_favorited',
     )
 
     class Meta:
@@ -181,7 +181,7 @@ class ShoppingCart(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Список покупок',
-        related_name='shopping',
+        related_name='in_shopping',
     )
 
     class Meta:

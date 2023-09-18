@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -7,14 +8,15 @@ from .generator import IngredientsFileGenerator
 from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
 from .serializers import (
     SubscriptionSerializer, TagSerializer,
-    RecipeSerializer, IngredientSerializer,
-    CustomUserSerializer
+    IngredientSerializer, CustomUserSerializer,
+    RecipeSerializer, RecipeCreateSerializer, RecipeReadSerializer
 )
-from .paginator import CustomUserPagination
+from .filters import IngredientFilter, RecipeFilter
+from .paginator import CustomUserPagination, CustomRecipePagination
 from djoser.views import UserViewSet
 from recipes.models import Ingredient, Recipe, Tag, User
 from users.models import Subscription
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -33,39 +35,94 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [IsAdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IngredientFilter
 
     @action(detail=False, methods=['get'])
-    def ingredient_search(query):
-        """Поиск ингредиентов."""
-        return Ingredient.objects.filter(name__startswith=query)
+    def get_ingredients(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    # def get_queryset(self):
+    #     name = self.request.query_params.get('name')
+    #     queryset = self.queryset
+
+    #     if name:
+    #         queryset = queryset.filter(name__icontains=name)
+
+    #     return queryset
+
+
+    # @action(detail=False, methods=['get'])
+    # def get_queryset(self):
+    #     name = self.request.query_params.get('name')
+    #     queryset = self.queryset
+
+    #     if name:
+    #         queryset = queryset.filter(name__icontains=name)
+
+    #     return queryset
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет рецептов."""
 
-    queryset = Recipe.objects.select_related('author')
-    serializer_class = RecipeSerializer
+    queryset = Recipe.objects.all()
     permission_classes = [IsAuthorOrAdminOrReadOnly]
+    pagination_class = CustomRecipePagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = RecipeFilter
 
-    # @action(detail=False, methods=['post'])
-    def create(self, validated_data):
-        """Создание рецепта."""
-        tags = validated_data.pop('tags')
-        ingredients_query = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
+    def get_queryset(self):
 
-        recipe.tags.set(tags)
+        queryset = self.queryset
+        name = self.request.query_params.getlist('name')
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        tags = self.request.query_params.getlist('tags')
+        if tags:
+            queryset = queryset.filter(tags__slug__in=tags).distinct()
 
-        ingredients = Ingredient.objects.filter(name__in=ingredients_query)
-        self.ingredients_set(recipe, ingredients)
+        author = self.request.query_params.get('author')
+        if author:
+            queryset = queryset.filter(author=author)
 
-        return recipe
+        if not self.request.user.is_authenticated:
+            return queryset
 
-    def download_ingredients(request, format):
+        is_shopping = self.request.query_params.get('is_in_shopping_cart')
+        if is_shopping:
+            queryset = queryset.filter(in_shopping__user=self.request.user)
+        else:
+            queryset = queryset.exclude(in_shopping__user=self.request.user)
+
+        is_favorite = self.request.query_params.get('is_favorited')
+        if is_favorite:
+            queryset = queryset.filter(in_favorited__user=self.request.user)
+        else:
+            queryset = queryset.exclude(in_favorited__user=self.request.user)
+
+        return queryset
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return RecipeReadSerializer
+        return RecipeCreateSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def download_ingredients(self, request, format):
         """Скачивание файла с ингредиентами в нескольких форматах."""
         ingredients = Ingredient.objects.all()
         ingredient_cart = [ingredient.name for ingredient in ingredients]
-
         file_generator = IngredientsFileGenerator(ingredient_cart)
 
         if format == 'pdf':

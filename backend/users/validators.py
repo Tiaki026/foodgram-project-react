@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 def validate_name(value):
     """Проверка написания только одним языком."""
-    regex = r'^[a-zA-Zа-яёА-ЯЁ-]$'
+    regex = r'^[a-zA-Zа-яёА-ЯЁ\s-]+$'
     if not re.match(regex, value):
         raise ValidationError('Используйте только кириллицу или латиницу.')
 
