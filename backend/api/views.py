@@ -12,16 +12,17 @@ from .serializers import (
     RecipeSerializer, RecipeCreateSerializer, RecipeReadSerializer
 )
 from .filters import IngredientFilter, RecipeFilter
-from .paginator import CustomUserPagination, CustomRecipePagination
+from .paginator import CustomPagination
 from djoser.views import UserViewSet
 from recipes.models import Ingredient, Recipe, Tag, User
 from users.models import Subscription
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import DjangoModelPermissions
 
 
-class TagViewSet(viewsets.ReadOnlyModelViewSet):
+class TagViewSet(viewsets.ModelViewSet):
     """Вьюсет тегов."""
 
     queryset = Tag.objects.all()
@@ -29,7 +30,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
 
-class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+class IngredientViewSet(viewsets.ModelViewSet):
     """Вьюсет ингридиентов."""
 
     queryset = Ingredient.objects.all()
@@ -76,7 +77,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     permission_classes = [IsAuthorOrAdminOrReadOnly]
-    pagination_class = CustomRecipePagination
+    pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
 
@@ -188,8 +189,8 @@ class UserViewSet(UserViewSet):
 
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthorOrAdminOrReadOnly]
-    pagination_class = CustomUserPagination
+    # permission_classes = [DjangoModelPermissions]
+    pagination_class = CustomPagination
 
     @action(
         detail=True, methods=['post'],

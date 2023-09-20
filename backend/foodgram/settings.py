@@ -12,7 +12,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='123no_key321asf5674r84g5f6h4t84h2g
 
 ALLOWED_HOSTS = ['*']
 
-DEBUG = os.getenv('DEBUG')
+# DEBUG = os.getenv('DEBUG')
+DEBUG = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -123,9 +124,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 6
 
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 6,
 }
 
 DJOSER = {
@@ -137,8 +138,10 @@ DJOSER = {
     },
 
     'PERMISSIONS': {
-        'user': ['api.permissions.IsAuthorOrAdminOrReadOnly'],
-        'user_list': ['api.permissions.IsAuthorOrAdminOrReadOnly'],
+        'user': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
+        'user_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
+        'resipe': ['api.permissions.IsAuthorOrAdminOrReadOnly'],
+        'recipe_list': ['api.permissions.IsAuthorOrAdminOrReadOnly'],
     },
 
     'LOGIN_FIELD': 'email',
