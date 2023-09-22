@@ -11,7 +11,7 @@ class Tag(models.Model):
 
     name = models.CharField(
         max_length=200,
-        verbose_name='Название',
+        verbose_name='Название тега',
         unique=True,
     )
     color = models.CharField(
@@ -64,7 +64,7 @@ class Recipe(models.Model):
 
     name = models.CharField(
         max_length=200,
-        verbose_name='Название',
+        verbose_name='Название рецепта',
     )
     author = models.ForeignKey(
         User,
@@ -75,7 +75,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         related_name='recipe',
-        through='recipes.AmountRecipeIngredients',
+        through='AmountRecipeIngredients',
         verbose_name='Ингредиенты',
     )
     tags = models.ManyToManyField(
@@ -126,7 +126,6 @@ class AmountRecipeIngredients(models.Model):
         verbose_name='Наименование ингредиентов',
     )
     amount = models.PositiveSmallIntegerField(
-        default=1,
         validators=[MinValueValidator(1)],
         verbose_name='Количество ингредиентов',
     )

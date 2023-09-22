@@ -124,6 +124,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 6
 
@@ -133,15 +136,15 @@ DJOSER = {
     'SERIALIZERS': {
         'user_create': 'api.serializers.CreateCustomUserSerializer',
         'user': 'api.serializers.CustomUserSerializer',
-        # 'user_list': 'api.serializers.CustomUserSerializer',
-        # 'current_user': 'api.serializers.CustomUserSerializer',
+        'user_list': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
     },
 
     'PERMISSIONS': {
-        'user': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
-        'user_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
-        'resipe': ['api.permissions.IsAuthorOrAdminOrReadOnly'],
-        'recipe_list': ['api.permissions.IsAuthorOrAdminOrReadOnly'],
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        'resipe': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
+        'recipe_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
     },
 
     'LOGIN_FIELD': 'email',

@@ -11,10 +11,10 @@ from django.contrib import admin
 class RecipeAdmin(admin.ModelAdmin):
     """Администрирование рецептов."""
 
-    list_display = (
+    list_display = [
         'name', 'id', 'author', 'is_favorited',
-    )
-    list_filter = ('author', 'name', 'tags',)
+    ]
+    list_filter = ['author', 'name', 'tags']
     search_fields = ['author__username', 'name', 'tags__name']
     raw_id_fields = ['author']
     form = RecipeForm
@@ -28,7 +28,7 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     """Администрирование ингредиентов."""
 
-    list_display = ('name', 'measurement_unit',)
+    list_display = ['name', 'measurement_unit']
     list_filter = ['name']
     search_fields = ['name']
 
@@ -37,7 +37,7 @@ class IngredientAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     """Администрирование тегов."""
 
-    list_display = ('name', 'color', 'slug',)
+    list_display = ['name', 'color', 'slug']
     search_fields = ['name']
 
 
@@ -45,14 +45,14 @@ class TagAdmin(admin.ModelAdmin):
 class ShoppingCartAdmin(admin.ModelAdmin):
     """Администрирование списка покупок."""
 
-    list_display = ('user', 'recipe',)
+    list_display = ['user', 'recipe']
 
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     """Администрирование избранных рецептов."""
 
-    list_display = ('user', 'recipe',)
+    list_display = ['user', 'recipe']
     search_fields = ['user__username', 'recipe__name']
 
 
@@ -60,6 +60,6 @@ class FavoriteAdmin(admin.ModelAdmin):
 class AmountRecipeIngredientsAdmin(admin.ModelAdmin):
     """Администрирование общего количесвта ингридиентов."""
 
-    list_display = ('recipe', 'ingredients', 'amount',)
+    list_display = ['recipe', 'ingredients', 'amount']
     list_filter = ['recipe', 'ingredients']
     search_fields = ['recipe__name', 'ingredient__name']

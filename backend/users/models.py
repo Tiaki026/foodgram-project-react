@@ -23,15 +23,11 @@ class CustomUser(AbstractUser):
     )
     first_name = models.CharField(
         max_length=150,
-        # null=True,
-        # blank=True,
         validators=[validate_name],
         verbose_name='Имя',
     )
     last_name = models.CharField(
         max_length=150,
-        # null=True,
-        # blank=True,
         validators=[validate_name],
         verbose_name='Фамилия',
     )
