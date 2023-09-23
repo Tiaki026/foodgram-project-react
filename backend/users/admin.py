@@ -16,7 +16,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         ('Personal Info', {'fields': ('first_name', 'last_name')}),
         ('Permissions', {'fields': (
             'is_active', 'is_staff', 'is_superuser',
-            )}),
+        )}),
         ('Important Dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
