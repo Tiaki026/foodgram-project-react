@@ -1,20 +1,19 @@
-from rest_framework.serializers import ModelSerializer
-from recipes.models import (
-    AmountRecipeIngredients, Ingredient, Recipe, Tag, User
-)
-from rest_framework.fields import IntegerField, SerializerMethodField
-from users.models import Subscription
-from drf_extra_fields.fields import Base64ImageField
-from django.db.models import F
-from djoser.serializers import UserSerializer, UserCreateSerializer
-from rest_framework.exceptions import ValidationError
-from rest_framework.fields import IntegerField
-from rest_framework import status
+from typing import Any, Dict, List
+
 from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
-from rest_framework.relations import PrimaryKeyRelatedField
+from django.db.models import F, QuerySet
 from django.db.transaction import atomic
-from typing import Dict, Any, List
+from django.shortcuts import get_object_or_404
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from drf_extra_fields.fields import Base64ImageField
+from rest_framework import status
+from rest_framework.fields import IntegerField, SerializerMethodField
+from rest_framework.relations import PrimaryKeyRelatedField
+from rest_framework.serializers import ModelSerializer
+
+from recipes.models import (AmountRecipeIngredients, Ingredient, Recipe, Tag,
+                            User)
+from users.models import Subscription
 
 
 class TagSerializer(ModelSerializer):
@@ -75,7 +74,7 @@ class CreateCustomUserSerializer(UserCreateSerializer):
         ]
         extra_kwargs = {'password': {'write_only': True}}
 
-    def validate(self, data):
+    def validate(self, data: dict) -> dict:
         """Проверка регистрации пользователя."""
         if data['username'] == 'me':
             raise ValidationError(
@@ -101,15 +100,15 @@ class CustomUserSerializer(UserSerializer):
             'is_subscribed'
         ]
 
-    def get_is_subscribed(self, obj):
+    def get_is_subscribed(self, obj: User) -> bool:
         """Проверка подписки пользователя."""
         request = self.context.get('request')
 
-        if not request or request.user.is_anonymous:
-            return False
-        return Subscription.objects.filter(
-            user=request.user, author=obj
-        ).exists()
+        if request or request.user.is_authenticated:
+            return Subscription.objects.filter(
+                user=request.user, author=obj
+            ).exists()
+        return False
 
 
 class SubscriptionSerializer(CustomUserSerializer):
@@ -128,7 +127,7 @@ class SubscriptionSerializer(CustomUserSerializer):
         ]
         read_only_fields = ['__all__']
 
-    def validate(self, validated_data):
+    def validate(self, validated_data: Dict) -> Subscription:
         """Проверка подписки."""
         author = self.context['request'].user
         user = validated_data['user']
@@ -147,7 +146,7 @@ class SubscriptionSerializer(CustomUserSerializer):
 
         return Subscription.objects.create(author=author, user=user)
 
-    def get_recipes_count(self, user: User):
+    def get_recipes_count(self, user: User) -> int:
         """Количесвтво рецептов."""
         return user.recipe.count()
 
@@ -170,7 +169,10 @@ class RecipeCreateSerializer(ModelSerializer):
             'name', 'text', 'cooking_time'
         ]
 
-    def validate_ingredient(self, ingredient_item: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_ingredient(
+        self, ingredient_item: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Валидатор ингредиентов по отдельности."""
         ingredient = get_object_or_404(Ingredient, id=ingredient_item['id'])
         if ingredient.name in self.ingredient_list:
             raise ValidationError(f'{ingredient.name} уже присутствует.')
@@ -180,6 +182,7 @@ class RecipeCreateSerializer(ModelSerializer):
         return ingredient_item
 
     def validate_ingredients(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Валидатор ингредиетов."""
         ingredients = self.initial_data.get('ingredients')
         if not ingredients:
             raise ValidationError('Нельзя приготовить из ничего.')
@@ -190,20 +193,22 @@ class RecipeCreateSerializer(ModelSerializer):
         return data
 
     def validate_tags(self, tags: Tag) -> Tag:
+        """Валидатор тегов."""
         if not tags:
             raise ValidationError('Количество не может быть пустым.')
         if len(tags) != len(set(tags)):
             raise ValidationError(f'{tags} уже выбран.')
         return tags
 
-    def ingredients_set(self, recipe: Recipe, ingredients: List[Dict[str, Any]]) -> None:
+    def ingredients_set(
+        self, recipe: Recipe, ingredients: List[Dict[str, Any]]
+    ) -> None:
         """Список ингредиентов."""
         amount_recipe_ingredients = []
         for ingredient in ingredients:
             amount_recipe_ingredients.append(
                 AmountRecipeIngredients(
-                    # ingredients=ingredient['ingredient'],
-                    Ingredient.objects.get(id=ingredient['id']),
+                    ingredients=ingredient['ingredient'],
                     recipe=recipe,
                     amount=ingredient['amount']
                 )
@@ -275,21 +280,21 @@ class RecipeReadSerializer(ModelSerializer):
             'author', 'is_favorited', 'is_in_shopping_cart', 'tags'
         ]
 
-    def get_is_favorited(self, recipe: Recipe):
+    def get_is_favorited(self, recipe: Recipe) -> bool:
         """Находится ли рецепт в избраном."""
         user = self.context.get('view').request.user
-        if user.is_anonymous:
-            return False
-        return user.favorited.filter(recipe=recipe).exists()
+        if user.is_authenticated:
+            return user.favorited.filter(recipe=recipe).exists()
+        return False
 
-    def get_is_in_shopping_cart(self, recipe: Recipe):
+    def get_is_in_shopping_cart(self, recipe: Recipe) -> bool:
         """Находится ли рецепт в списке покупок."""
         user = self.context.get('view').request.user
-        if user.is_anonymous:
-            return False
-        return user.shopping.filter(recipe=recipe).exists()
+        if user.is_authenticated:
+            return user.shopping.filter(recipe=recipe).exists()
+        return False
 
-    def get_ingredients(self, recipe: Recipe):
+    def get_ingredients(self, recipe: Recipe) -> QuerySet:
         """Получение ингредиентов."""
         ingredients = recipe.ingredients.values(
             'id', 'name', 'measurement_unit',

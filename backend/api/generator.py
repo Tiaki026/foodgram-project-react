@@ -6,18 +6,18 @@ from reportlab.pdfgen import canvas
 
 
 class IngredientsFileGenerator:
-    """Класс генерации файлов."""
+    """Класс генерации файлов pdf, txt, doc."""
 
-    def __init__(self, ingredients):
-        self.ingredients = ingredients
+    def __init__(self, shopping_cart):
+        self.shopping_cart = shopping_cart
 
-    def generate_pdf(self):
+    def generate_pdf(self) -> HttpResponse:
         """Генератор формата pdf."""
         buffer = BytesIO()
         p = canvas.Canvas(buffer)
 
-        for ingredient in self.ingredients:
-            p.drawString(100, p._y, ingredient)
+        for shopping_c in self.shopping_cart:
+            p.drawString(100, p._y, shopping_c)
             p.showPage()
 
         p.save()
@@ -31,9 +31,9 @@ class IngredientsFileGenerator:
 
         return response
 
-    def generate_txt(self):
+    def generate_txt(self) -> HttpResponse:
         """Генератор формата txt."""
-        content = '\n'.join(self.ingredients)
+        content = '\n'.join(self.shopping_cart)
 
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = (
@@ -43,11 +43,11 @@ class IngredientsFileGenerator:
 
         return response
 
-    def generate_doc(self):
+    def generate_doc(self) -> HttpResponse:
         """Генератор формата doc."""
         document = Document()
-        for ingredient in self.ingredients:
-            document.add_paragraph(ingredient)
+        for shopping_c in self.shopping_cart:
+            document.add_paragraph(shopping_c)
 
         buffer = BytesIO()
         document.save(buffer)

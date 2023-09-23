@@ -12,7 +12,8 @@ class RecipeMixin():
     serializer_class = ModelSerializer
     model_class = Model
 
-    def _add_connection(self, user, pk):
+    def _add_connection(self, user, pk) -> Response:
+        """Создание M2M-связи"""
         if self.model_class.objects.filter(user=user, recipe__id=pk).exists():
             return Response(
                 {'detail': 'Действие невозможно'},
@@ -27,7 +28,8 @@ class RecipeMixin():
             headers={'detail': 'Связь успешно создана'}
         )
 
-    def _delete_connection(self, user, pk):
+    def _delete_connection(self, user, pk) -> Response:
+        """Удаление M2M-связи"""
         recipe = self.model_class.objects.filter(
             user=user, recipe__id=pk
         )

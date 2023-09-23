@@ -1,3 +1,7 @@
+"""Скрипт создания списка ингредиентов.
+
+из csv + json в combined_ingredients.json.
+"""
 import csv
 import json
 
