@@ -13,7 +13,7 @@ class RecipeMixin():
     model_class = Model
 
     def _add_connection(self, user, pk) -> Response:
-        """Создание M2M-связи"""
+        """Создание M2M-связи."""
         if self.model_class.objects.filter(user=user, recipe__id=pk).exists():
             return Response(
                 {'detail': 'Действие невозможно'},
@@ -29,7 +29,7 @@ class RecipeMixin():
         )
 
     def _delete_connection(self, user, pk) -> Response:
-        """Удаление M2M-связи"""
+        """Удаление M2M-связи."""
         recipe = self.model_class.objects.filter(
             user=user, recipe__id=pk
         )

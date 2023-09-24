@@ -148,7 +148,7 @@ class SubscriptionSerializer(CustomUserSerializer):
 
     def get_recipes_count(self, user: User) -> int:
         """Количесвтво рецептов."""
-        return user.recipe.count()
+        return user.recipes.count()
 
 
 class RecipeCreateSerializer(ModelSerializer):
