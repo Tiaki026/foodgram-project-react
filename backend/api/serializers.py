@@ -129,21 +129,29 @@ class SubscriptionSerializer(CustomUserSerializer):
 
     def validate(self, validated_data: Dict) -> Subscription:
         """Проверка подписки."""
-        author = self.context['request'].user
+        # author = self.context['request'].user
         user = validated_data['user']
+        author = get_object_or_404(User, pk=id)
         if Subscription.objects.filter(
             subscriber=user, author=author
         ).exists():
             raise ValidationError(
-                'Вы уже подписаны на этого автора.',
+                f'Вы уже подписаны на {author}.',
                 code=status.HTTP_400_BAD_REQUEST
             )
         if user == author:
-            raise ValidationError(
-                'Нельзя подписываться на самого себя.',
-                code=status.HTTP_400_BAD_REQUEST
+            return ValidationError(
+                f'{author} не может подписаться на {author}',
+                status=status.HTTP_400_BAD_REQUEST
             )
-
+        if not Subscription.objects.filter(
+            user=user,
+            author=author
+        ).exists():
+            return ValidationError(
+                'Действие невозможно',
+                status=status.HTTP_400_BAD_REQUEST
+            )
         return Subscription.objects.create(author=author, user=user)
 
     def get_recipes_count(self, user: User) -> int:

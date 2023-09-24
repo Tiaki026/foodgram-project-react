@@ -1,6 +1,6 @@
 from typing import Type
 
-from django.db.models import Sum, QuerySet
+from django.db.models import Sum
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -72,33 +72,33 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
         detail=True, permission_classes=[IsAuthenticated],
         methods=['POST', 'DELETE']
     )
-    def favorite(self, request: Request, pk: int) -> Response:
+    def favorite(self, pk: int) -> Response:
         """Добавление и удаление из избранного."""
         self.model_class = Favorite
-        if request.method == 'POST':
-            return self._add_connection(request.user, pk)
-        elif request.method == 'DELETE':
-            return self._delete_connection(request.user, pk)
-        return Response(
-            {'detail': 'Метод не поддерживается'},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED
-        )
+        if 'POST':
+            return self._add_connection(self.request.user, pk)
+        else:
+            return self._delete_connection(self.request.user, pk)
+        # return Response(
+        #     {'detail': 'Метод не поддерживается'},
+        #     status=status.HTTP_405_METHOD_NOT_ALLOWED
+        # )
 
     @action(
         detail=True, permission_classes=[IsAuthenticated],
         methods=['POST', 'DELETE']
     )
-    def shopping_cart(self, request: Request, pk: int) -> Response:
+    def shopping_cart(self, pk: int) -> Response:
         """Добавление и удаление из списка покупок."""
         self.model_class = ShoppingCart
-        if request.method == 'POST':
-            return self._add_connection(request.user, pk)
-        elif request.method == 'DELETE':
-            return self._delete_connection(request.user, pk)
-        return Response(
-            {'detail': 'Метод не поддерживается'},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED
-        )
+        if 'POST':
+            return self._add_connection(self.request.user, pk)
+        else:
+            return self._delete_connection(self.request.user, pk)
+        # return Response(
+        #     {'detail': 'Метод не поддерживается'},
+        #     status=status.HTTP_405_METHOD_NOT_ALLOWED
+        # )
 
     @action(
         detail=False, methods=['GET'],
@@ -157,40 +157,19 @@ class UserViewSet(UserViewSet):
         detail=True, methods=['POST', 'DELETE'],
         permission_classes=[IsAuthenticated]
     )
-    def subscribe(self, request: Request, id) -> Response:
+    def subscribe(self, id) -> Response:
         """Создание и удаление подписок."""
-        user = request.user
+        user = self.request.user
         author = get_object_or_404(User, pk=id)
 
-        if request.method == 'POST':
-            if user == author:
-                return Response(
-                    f'{author} не может подписаться на {author}',
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if Subscription.objects.filter(
-                user=user,
-                author=author
-            ).exists():
-                return Response(
-                    f'Вы уже подписаны на {author}.',
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        if 'POST':
             Subscription.objects.create(user=user, author=author)
             self.get_serializer(author)
             return Response(
                 f'Вы подписались на {author}.',
                 status=status.HTTP_201_CREATED,
             )
-        elif request.method == 'DELETE':
-            if not Subscription.objects.filter(
-                user=user,
-                author=author
-            ).exists():
-                return Response(
-                    'Действие невозможно',
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        else:
             subscription = get_object_or_404(
                 Subscription,
                 user=user,
@@ -200,11 +179,6 @@ class UserViewSet(UserViewSet):
             return Response(
                 f'Вы отписались от {author}',
                 status=status.HTTP_204_NO_CONTENT
-            )
-        else:
-            return Response(
-                'Метод не поддерживается',
-                status=405
             )
 
     @action(

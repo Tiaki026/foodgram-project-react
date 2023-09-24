@@ -38,7 +38,6 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ['author__username', 'name', 'tags__name']
     raw_id_fields = ['author']
     inlines = [AmountRecipeIngredientsInline]
-    # form = RecipeForm
     fields = [
         'name', 'author', 'tags', 'image',
         'text', 'cooking_time'
