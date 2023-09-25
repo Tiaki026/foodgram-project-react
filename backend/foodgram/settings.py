@@ -108,7 +108,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 # STATIC_ROOT = BASE_DIR / STATIC_URL
 STATIC_ROOT = BASE_DIR / STATIC_URL
 
@@ -144,7 +144,8 @@ DJOSER = {
 
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        # 'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        'user_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
         'resipe': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
         'recipe_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
     },

@@ -2,8 +2,6 @@ from django.contrib import admin
 from django.contrib.admin.widgets import AdminURLFieldWidget
 from django.utils.html import format_html
 
-
-from .forms import RecipeForm
 from .models import (AmountRecipeIngredients, Favorite, Ingredient, Recipe,
                      ShoppingCart, Tag)
 

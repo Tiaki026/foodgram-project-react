@@ -18,12 +18,12 @@ from users.models import Subscription
 
 from .filters import IngredientFilter, RecipeFilter
 from .generator import IngredientsFileGenerator
-from .mixins import RecipeMixin
+from .mixins import RecipeMixin, UserMixin
 from .paginator import CustomPagination
 from .permissions import IsAdminOrOwnerOrReadOnly, IsAdminOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeReadSerializer, RecipeSerializer,
-                          TagSerializer)
+                          TagSerializer, SubscriptionSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -55,7 +55,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     """Вьюсет рецептов."""
 
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.select_related('author')
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
     serializer_class = RecipeSerializer
@@ -72,33 +72,19 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
         detail=True, permission_classes=[IsAuthenticated],
         methods=['POST', 'DELETE']
     )
-    def favorite(self, pk: int) -> Response:
+    def favorite(self, request, pk: int):
         """Добавление и удаление из избранного."""
         self.model_class = Favorite
-        if 'POST':
-            return self._add_connection(self.request.user, pk)
-        else:
-            return self._delete_connection(self.request.user, pk)
-        # return Response(
-        #     {'detail': 'Метод не поддерживается'},
-        #     status=status.HTTP_405_METHOD_NOT_ALLOWED
-        # )
+        return self._add_delete_method(request, self.request.user, pk)
 
     @action(
         detail=True, permission_classes=[IsAuthenticated],
         methods=['POST', 'DELETE']
     )
-    def shopping_cart(self, pk: int) -> Response:
+    def shopping_cart(self, request, pk: int):
         """Добавление и удаление из списка покупок."""
         self.model_class = ShoppingCart
-        if 'POST':
-            return self._add_connection(self.request.user, pk)
-        else:
-            return self._delete_connection(self.request.user, pk)
-        # return Response(
-        #     {'detail': 'Метод не поддерживается'},
-        #     status=status.HTTP_405_METHOD_NOT_ALLOWED
-        # )
+        return self._add_delete_method(request, self.request.user, pk)
 
     @action(
         detail=False, methods=['GET'],
@@ -146,40 +132,22 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
         return HttpResponse(shopping_cart)
 
 
-class UserViewSet(UserViewSet):
+class UserViewSet(UserViewSet, UserMixin):
     """Вьюсет пользователя."""
 
     queryset = User.objects.all()
     pagination_class = CustomPagination
     permission_classes = [DjangoModelPermissions]
+    serializer_class = SubscriptionSerializer
+    model_class = Subscription
 
     @action(
         detail=True, methods=['POST', 'DELETE'],
         permission_classes=[IsAuthenticated]
     )
-    def subscribe(self, id) -> Response:
+    def subscribe(self, request, id) -> Response:
         """Создание и удаление подписок."""
-        user = self.request.user
-        author = get_object_or_404(User, pk=id)
-
-        if 'POST':
-            Subscription.objects.create(user=user, author=author)
-            self.get_serializer(author)
-            return Response(
-                f'Вы подписались на {author}.',
-                status=status.HTTP_201_CREATED,
-            )
-        else:
-            subscription = get_object_or_404(
-                Subscription,
-                user=user,
-                author=author
-            )
-            subscription.delete()
-            return Response(
-                f'Вы отписались от {author}',
-                status=status.HTTP_204_NO_CONTENT
-            )
+        return self._add_delete_method(request, self.request.user, id)
 
     @action(
         detail=False, methods=['GET'],
