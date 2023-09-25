@@ -121,7 +121,6 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
                 f'{ingredients["ingredients__measurement_unit"]}'
             )
         format = request.query_params.get('format')
-        # print(f"Received format: {format}")
         file_generator = IngredientsFileGenerator(shopping_cart)
         format_to_method = {
             'pdf': file_generator.generate_pdf,
@@ -130,12 +129,6 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
         }
         if format in format_to_method:
             return format_to_method[format](shopping_cart)
-        # if format == 'pdf':
-        #     return file_generator.generate_pdf(shopping_cart)
-        # elif format == 'doc':
-        #     return file_generator.generate_doc(shopping_cart)
-        # elif format == 'txt':
-        #     return file_generator.generate_txt(shopping_cart)
         return HttpResponse(shopping_cart)
 
 
