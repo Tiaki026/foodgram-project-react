@@ -1,5 +1,6 @@
 from typing import Type
 
+from rest_framework.permissions import AllowAny
 from django.http.response import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -14,13 +15,13 @@ from recipes.models import (Favorite, Ingredient,
                             Recipe, ShoppingCart, Tag, User)
 
 from .filters import IngredientFilter, RecipeFilter
-from .generator import IngredientsFileGenerator
+from .generator import ShoppingCartFileGenerator
 from .mixins import RecipeMixin, UserMixin
 from .paginator import CustomPagination
 from .permissions import IsAdminOrOwnerOrReadOnly, IsAdminOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeReadSerializer, RecipeSerializer,
-                          TagSerializer)
+                          TagSerializer, SubscriptionSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -29,7 +30,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAdminOrReadOnly]
-    pagination_class = None
+    # pagination_class = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -40,7 +41,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = IngredientFilter
-    pagination_class = None
+    # pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
@@ -82,7 +83,7 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
         detail=False, methods=['GET'],
         permission_classes=[IsAuthenticated]
     )
-    def download_shopping_cart(self, request: Request) -> HttpResponse:
+    def download_shopping_cart(self, request: Request):
         """Скачивание файла с ингредиентами в нескольких форматах."""
         user = request.user
         if not user.shopping.exists():
@@ -90,22 +91,18 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
                 f'Это для {user.username}',
                 status=status.HTTP_400_BAD_REQUEST
             )
-        file_format = request.query_params.get('format')
-        # file_generator = IngredientsFileGenerator(user)
-        shopping_cart = IngredientsFileGenerator.create_shopping_cart_list()
+        generator = ShoppingCartFileGenerator(request)
         format_to_method = {
-            'pdf': IngredientsFileGenerator.generate_pdf,
-            'doc': IngredientsFileGenerator.generate_doc,
-            'txt': IngredientsFileGenerator.generate_txt
+            'pdf': generator.generate_pdf,
+            'doc': generator.generate_doc,
+            'txt': generator.generate_txt
         }
-        if file_format in format_to_method:
-            response = format_to_method[file_format]()
-            response['Content-Disposition'] = (
-                f'attachment;'
-                f'filename="ingredient_list.{file_format}"'
-            )
-            return response
-        return HttpResponse(shopping_cart)
+        format_name = request.GET.get('format', 'txt')
+        if format_name in format_to_method:
+            generate_method = format_to_method[format_name]
+            shopping_cart = generator.create_shopping_cart_list()
+            return generate_method(shopping_cart)
+        return Response()
 
 
 class UserViewSet(UserViewSet, UserMixin):
@@ -113,7 +110,9 @@ class UserViewSet(UserViewSet, UserMixin):
 
     queryset = User.objects.all()
     pagination_class = CustomPagination
-    permission_classes = [DjangoModelPermissions]
+    # permission_classes = [DjangoModelPermissions]
+    permission_classes = [IsAdminOrOwnerOrReadOnly]
+    serializer_class = SubscriptionSerializer
 
     @action(
         detail=True, methods=['POST', 'DELETE'],

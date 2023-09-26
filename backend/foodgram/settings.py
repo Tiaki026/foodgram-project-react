@@ -129,8 +129,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 6
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 6
 
 }
 
@@ -144,8 +144,9 @@ DJOSER = {
 
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-        # 'user_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
+        # 'user': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
+        # 'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        'user_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
         # 'resipe': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
         # 'recipe_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
     },

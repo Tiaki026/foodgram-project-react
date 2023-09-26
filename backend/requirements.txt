@@ -8,4 +8,3 @@ python-docx==0.8.11
 reportlab==4.0.4
 drf-extra-fields==3.7.0
 psycopg2-binary==2.9.7
-fpdf==1.7.2

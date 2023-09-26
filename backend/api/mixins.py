@@ -62,7 +62,7 @@ class UserMixin:
                     f'Вы уже подписаны на {author}.',
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            self.model_class.objects.create(user=user, author=author)
+            Subscription.objects.create(user=user, author=author)
             return Response(
                 f'Вы подписались на {author}.',
                 status=status.HTTP_201_CREATED,

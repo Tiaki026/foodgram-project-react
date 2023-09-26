@@ -104,13 +104,14 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj: User) -> bool:
         """Проверка подписки пользователя."""
-        request = self.context.get('request').user
+        request_user = self.context.get('request').user
 
-        if request.is_anonymous:
+        if request_user.is_anonymous or (request_user == obj):
             return False
         return Subscription.objects.filter(
-            user=request, author=obj
+            user=request_user, author=obj
         ).exists()
+        # return request_user.subscriber.filter(author=obj).exists()
 
 
 class SubscriptionSerializer(CustomUserSerializer):
