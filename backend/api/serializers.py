@@ -21,7 +21,8 @@ class TagSerializer(ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ['id', 'name', 'color', 'slug']
+        # fields = ['id', 'name', 'color', 'slug']
+        fields = '__all__'
         read_only_fields = ['__all__']
 
 
@@ -30,7 +31,8 @@ class IngredientSerializer(ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = ['id', 'name', 'measurement_unit']
+        # fields = ['id', 'name', 'measurement_unit']
+        fields = '__all__'
         read_only_fields = ['__all__']
 
 
@@ -60,7 +62,7 @@ class AmountRecipeIngredientsSerializer(ModelSerializer):
 
     class Meta:
         model = AmountRecipeIngredients
-        fields = ['recipe', 'id', 'amount']
+        fields = ['id', 'recipe', 'amount']
 
 
 class CreateCustomUserSerializer(UserCreateSerializer):
@@ -102,13 +104,13 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj: User) -> bool:
         """Проверка подписки пользователя."""
-        request = self.context.get('request')
+        request = self.context.get('request').user
 
-        if request or request.user.is_authenticated:
-            return Subscription.objects.filter(
-                user=request.user, author=obj
-            ).exists()
-        return False
+        if request.is_anonymous:
+            return False
+        return Subscription.objects.filter(
+            user=request, author=obj
+        ).exists()
 
 
 class SubscriptionSerializer(CustomUserSerializer):
@@ -168,7 +170,7 @@ class RecipeCreateSerializer(ModelSerializer):
     )
     ingredients = AmountRecipeIngredientsSerializer(many=True)
 
-    image = Base64ImageField()
+    image = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
         model = Recipe
@@ -270,12 +272,12 @@ class RecipeCreateSerializer(ModelSerializer):
 class RecipeReadSerializer(ModelSerializer):
     """Сериализатор чтения рецептов."""
 
-    author = CustomUserSerializer()
+    author = CustomUserSerializer(read_only=True)
     ingredients = SerializerMethodField()
-    tags = TagSerializer(many=True)
+    tags = TagSerializer(read_only=True, many=True)
     image = Base64ImageField()
-    is_favorited = SerializerMethodField()
-    is_in_shopping_cart = SerializerMethodField()
+    is_favorited = SerializerMethodField(read_only=True)
+    is_in_shopping_cart = SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
@@ -284,9 +286,10 @@ class RecipeReadSerializer(ModelSerializer):
             'tags', 'image', 'text', 'cooking_time',
             'pub_date', 'is_favorited', 'is_in_shopping_cart'
         ]
-        read_only_fields = [
-            'author', 'is_favorited', 'is_in_shopping_cart', 'tags'
-        ]
+        # read_only_fields = [
+        #     'author', 'is_favorited', 'is_in_shopping_cart', 'tags'
+        # ]
+        # read_only_fields = ['__all__']
 
     def get_is_favorited(self, recipe: Recipe) -> bool:
         """Находится ли рецепт в избраном."""

@@ -3,13 +3,41 @@ from io import BytesIO
 from django.http import HttpResponse
 from docx import Document
 from reportlab.pdfgen import canvas
+from recipes.models import AmountRecipeIngredients
+from django.db.models import Sum
 
 
 class IngredientsFileGenerator:
-    """Класс генерации файлов pdf, txt, doc."""
+    """Класс генерации списка покупок в форматах pdf, txt, doc."""
 
-    def __init__(self, shopping_cart):
-        self.shopping_cart = shopping_cart
+    def __init__(self):
+        self.shopping_cart = self.create_shopping_cart_list()
+
+    def create_shopping_cart_list(self, request):
+        user = request.user
+        recipe_name = AmountRecipeIngredients.objects.filter(
+            recipe__in_shopping__user=user
+        ).values('recipe__name').first().get('recipe__name', 'Без названия')
+        shopping_cart = [
+            f'Список ингредиентов для "{user.username}"\n'
+            f'Готовим "{recipe_name}"\n'
+            f'Для этого понадобятся:\n'
+        ]
+        ingredient = (
+            AmountRecipeIngredients.objects.filter(
+                recipe__in_shopping__user=user
+            ).values(
+                'ingredients__name',
+                'ingredients__measurement_unit'
+            ).annotate(amount=Sum('amount'))
+        )
+        for ingredients in ingredient:
+            shopping_cart.append(
+                f'{ingredients["ingredients__name"]}: '
+                f'{ingredients["amount"]} '
+                f'{ingredients["ingredients__measurement_unit"]}'
+            )
+        return shopping_cart
 
     def generate_pdf(self) -> HttpResponse:
         """Генератор формата pdf."""

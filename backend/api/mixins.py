@@ -1,15 +1,15 @@
-from rest_framework.serializers import ModelSerializer
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from recipes.models import Recipe, User
+from .serializers import RecipeSerializer, SubscriptionSerializer
+from users.models import Subscription
 
 
 class RecipeMixin:
     """Миксин добавления / удаления в избранное и список покупок."""
 
-    serializer_class = ModelSerializer
     model_class = Model
 
     def _add_delete_method(self, request, user, pk: int):
@@ -24,7 +24,7 @@ class RecipeMixin:
                 )
             recipe = get_object_or_404(Recipe, id=pk)
             self.model_class.objects.create(user=user, recipe=recipe)
-            serializer = self.serializer_class(recipe)
+            serializer = RecipeSerializer(recipe)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED,
@@ -49,16 +49,13 @@ class RecipeMixin:
 class UserMixin:
     """Миксин создания / удаления."""
 
-    serializer_class = ModelSerializer
-    model_class = Model
-
     def _add_delete_method(self, request, user, id: int):
         """Метод создания и удаления подписки."""
         user = self.request.user
         author = get_object_or_404(User, pk=id)
 
         if request.method == 'POST':
-            if self.model_class.objects.filter(
+            if Subscription.objects.filter(
                 user=user, author=author
             ).exists():
                 return Response(
@@ -71,7 +68,7 @@ class UserMixin:
                 status=status.HTTP_201_CREATED,
             )
         get_object_or_404(
-            self.model_class,
+            Subscription,
             user=user,
             author=author
         ).delete()

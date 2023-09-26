@@ -1,8 +1,6 @@
 from typing import Type
 
-from django.db.models import Sum
 from django.http.response import HttpResponse
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
@@ -12,9 +10,8 @@ from rest_framework.permissions import (SAFE_METHODS, DjangoModelPermissions,
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from recipes.models import (AmountRecipeIngredients, Favorite, Ingredient,
+from recipes.models import (Favorite, Ingredient,
                             Recipe, ShoppingCart, Tag, User)
-from users.models import Subscription
 
 from .filters import IngredientFilter, RecipeFilter
 from .generator import IngredientsFileGenerator
@@ -23,7 +20,7 @@ from .paginator import CustomPagination
 from .permissions import IsAdminOrOwnerOrReadOnly, IsAdminOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeReadSerializer, RecipeSerializer,
-                          TagSerializer, SubscriptionSerializer)
+                          TagSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,14 +40,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = IngredientFilter
 
-    # def get_queryset(self) -> QuerySet:
-    #     queryset = self.queryset
-    #     name = self.request.query_params.get('name')
-
-    #     if name:
-    #         return queryset.filter(name__istartswith=name)
-    #     return queryset
-
 
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     """Вьюсет рецептов."""
@@ -58,7 +47,8 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     queryset = Recipe.objects.select_related('author')
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
-    serializer_class = RecipeSerializer
+    # pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
 
     def get_serializer_class(self) -> Type[RecipeSerializer]:
         if self.request.method in SAFE_METHODS:
@@ -93,43 +83,25 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     def download_shopping_cart(self, request: Request) -> HttpResponse:
         """Скачивание файла с ингредиентами в нескольких форматах."""
         user = request.user
-        recipe_name = AmountRecipeIngredients.objects.filter(
-            recipe__in_shopping__user=user
-        ).values('recipe__name').first().get('recipe__name', 'Без названия')
-        shopping_cart = [
-            f'Список ингредиентов для "{user.username}"\n'
-            f'Готовим "{recipe_name}"\n'
-            f'Для этого понадобятся:\n'
-        ]
         if not user.shopping.exists():
             return Response(
                 f'Это для {user.username}',
                 status=status.HTTP_400_BAD_REQUEST
             )
-        ingredient = (
-            AmountRecipeIngredients.objects.filter(
-                recipe__in_shopping__user=user
-            ).values(
-                'ingredients__name',
-                'ingredients__measurement_unit'
-            ).annotate(amount=Sum('amount'))
-        )
-        for ingredients in ingredient:
-            shopping_cart.append(
-                f'{ingredients["ingredients__name"]}: '
-                f'{ingredients["amount"]} '
-                f'{ingredients["ingredients__measurement_unit"]}'
-            )
-        format = request.query_params.get('format')
-        file_generator = IngredientsFileGenerator(shopping_cart)
+        file_format = request.query_params.get('format')
+        file_generator = IngredientsFileGenerator(user)
         format_to_method = {
             'pdf': file_generator.generate_pdf,
             'doc': file_generator.generate_doc,
             'txt': file_generator.generate_txt
         }
-        if format in format_to_method:
-            return format_to_method[format](shopping_cart)
-        return HttpResponse(shopping_cart)
+        if file_format in format_to_method:
+            response = format_to_method[file_format]()
+            response['Content-Disposition'] = (
+                f'attachment;'
+                f'filename="ingredient_list.{file_format}"'
+            )
+            return response
 
 
 class UserViewSet(UserViewSet, UserMixin):
@@ -138,8 +110,6 @@ class UserViewSet(UserViewSet, UserMixin):
     queryset = User.objects.all()
     pagination_class = CustomPagination
     permission_classes = [DjangoModelPermissions]
-    serializer_class = SubscriptionSerializer
-    model_class = Subscription
 
     @action(
         detail=True, methods=['POST', 'DELETE'],

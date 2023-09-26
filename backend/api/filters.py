@@ -19,7 +19,7 @@ class RecipeFilter(FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['tags', 'author', 'author__username']
+        fields = ['tags', 'ingredients', 'author', 'author__username']
         extra_fields = {
             'tags__slug': ['exact', 'in'],
         }

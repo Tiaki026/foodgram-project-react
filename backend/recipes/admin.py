@@ -55,10 +55,13 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Картинка')
     def is_image(self, obj: Recipe):
         """Превью картинки."""
-        return format_html(
-            '<img src="{}" style="max-height: 90; max-width: 90px;" />',
-            obj.image.url
-        )
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-height: 90px; max-width: 90px;" />',
+                obj.image.url
+            )
+        else:
+            return "Нет изображения"
 
 
 @admin.register(Ingredient)

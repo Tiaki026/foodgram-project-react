@@ -1,20 +1,20 @@
 # flake8: noqa
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY = os.getenv('SECRET_KEY', default='123no_key321asf5674r84g5f6h4t84h2gj46tj423')
-SECRET_KEY = 'django-insecure-o9#6w)8v%9xf4eb%skywm+(ny^j%t^q*w&e#5y8xj+66!zm)i4'
+SECRET_KEY = os.getenv('SECRET_KEY', default='123no_key321asf5674r84g5f6h4t84h2gj46tj423')
+# SECRET_KEY = 'django-insecure-o9#6w)8v%9xf4eb%skywm+(ny^j%t^q*w&e#5y8xj+66!zm)i4'
 ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1').split(',')
 
-# DEBUG = os.getenv('DEBUG')
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
+# DEBUG = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -62,24 +62,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-# if DEBUG:
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': os.getenv("DB_ENGINE", default='django.db.backends.postgresql'),
-#             'NAME': os.getenv('POSTGRES_DB', default='default_db'),
-#             'USER': os.getenv('POSTGRES_USER', default='default_user'),
-#             'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='default_password'),
-#             'HOST': os.getenv('DB_HOST', default='default_host'),
-#             'PORT': os.getenv('DB_PORT', default='5432')
-#         }
-#     }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv("DB_ENGINE", default='django.db.backends.postgresql'),
+            'NAME': os.getenv('POSTGRES_DB', default='default_db'),
+            'USER': os.getenv('POSTGRES_USER', default='default_user'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='default_password'),
+            'HOST': os.getenv('DB_HOST', default='default_host'),
+            'PORT': os.getenv('DB_PORT', default='5432')
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -144,10 +144,10 @@ DJOSER = {
 
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-        # 'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-        'user_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
-        'resipe': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
-        'recipe_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        # 'user_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
+        # 'resipe': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
+        # 'recipe_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
     },
 
     'LOGIN_FIELD': 'email',
