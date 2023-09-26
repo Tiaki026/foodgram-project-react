@@ -27,8 +27,10 @@ services:
       - SECRET_KEY
       - DEBUG
     volumes:
-      - static:/app/static
-      - media:/app/media
+      - static:/app/static/
+      - media:/app/media/
+    depends_on:
+      - db
   
   frontend:
     build:
@@ -47,3 +49,6 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static:/var/html/static/
       - media:/var/html/media/
+    depends_on:
+      - backend
+      - frontend
