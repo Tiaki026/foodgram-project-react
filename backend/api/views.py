@@ -29,6 +29,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAdminOrReadOnly]
+    pagination_class = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -39,6 +40,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = IngredientFilter
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
@@ -47,7 +49,7 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     queryset = Recipe.objects.select_related('author')
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
-    # pagination_class = CustomPagination
+    pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
 
     def get_serializer_class(self) -> Type[RecipeSerializer]:
@@ -89,11 +91,12 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
                 status=status.HTTP_400_BAD_REQUEST
             )
         file_format = request.query_params.get('format')
-        file_generator = IngredientsFileGenerator(user)
+        # file_generator = IngredientsFileGenerator(user)
+        shopping_cart = IngredientsFileGenerator.create_shopping_cart_list()
         format_to_method = {
-            'pdf': file_generator.generate_pdf,
-            'doc': file_generator.generate_doc,
-            'txt': file_generator.generate_txt
+            'pdf': IngredientsFileGenerator.generate_pdf,
+            'doc': IngredientsFileGenerator.generate_doc,
+            'txt': IngredientsFileGenerator.generate_txt
         }
         if file_format in format_to_method:
             response = format_to_method[file_format]()
@@ -102,6 +105,7 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
                 f'filename="ingredient_list.{file_format}"'
             )
             return response
+        return HttpResponse(shopping_cart)
 
 
 class UserViewSet(UserViewSet, UserMixin):
