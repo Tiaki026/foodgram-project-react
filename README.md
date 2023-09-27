@@ -251,4 +251,4 @@ ingredientNameFirstLatter   абрикос
   - [Колотиков Евгений](https://github.com/Tiaki026)
 
 
-    [![image](https://github.com/Tiaki026/foodgram-project-react/assets/123443356/3e27c3e4-df2a-472a-963d-91516a3e5dda)(https://github.com/Tiaki026/foodgram-project-react#продуктовый-помощник-foodgram-pizza)]
+    [:top: Путь наверх :top:](https://github.com/Tiaki026/foodgram-project-react/blob/master/README.md#оглавление)
