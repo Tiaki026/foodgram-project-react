@@ -8,6 +8,7 @@ volumes:
 services:
   db:
     image: postgres:13
+    restart: always
     env_file: .env
     environment:
       - POSTGRES_DB
@@ -20,6 +21,7 @@ services:
 
   backend:
     image: tiaki2601/foodgram_backend:latest
+    restart: always
     env_file: .env
     environment:
       - ALLOWED_HOSTS
@@ -38,6 +40,7 @@ services:
 
   nginx:
     image: tiaki2601/foodgram_nginx:latest
+    restart: always
     env_file: .env
     environment:
       - ALLOWED_HOSTS
@@ -50,4 +53,5 @@ services:
     depends_on:
       - backend
       - frontend
+
 
