@@ -6,13 +6,12 @@ from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (AmountRecipeIngredients, Ingredient, Recipe, Tag,
+                            User)
 from rest_framework import status
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
-
-from recipes.models import (AmountRecipeIngredients, Ingredient, Recipe, Tag,
-                            User)
 from users.models import Subscription
 
 

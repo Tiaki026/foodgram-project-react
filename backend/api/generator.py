@@ -3,9 +3,8 @@ from io import BytesIO
 from django.db.models import Sum
 from django.http import HttpResponse
 from docx import Document
-from reportlab.pdfgen import canvas
-
 from recipes.models import AmountRecipeIngredients
+from reportlab.pdfgen import canvas
 
 
 class ShoppingCartFileGenerator:
