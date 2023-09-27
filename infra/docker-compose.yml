@@ -3,6 +3,7 @@ volumes:
   pg_data:
   static:
   media:
+  redoc:
 
 services:
   db:
@@ -15,7 +16,8 @@ services:
       - DB_HOST
       - DB_PORT
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data/
+    restart: always
 
   backend:
     build:
@@ -29,6 +31,8 @@ services:
     volumes:
       - static:/app/static/
       - media:/app/media/
+      - redoc:/app/docs/
+    restart: always
     depends_on:
       - db
   
@@ -40,15 +44,19 @@ services:
       - ../frontend/:/app/result_build/
 
   nginx:
-    image: nginx:1.19.3
+    image: nginx:1.21.3
     ports:
-      - "80:80"
+      - "8000:80"
+    env_file: .env
+    environment:
+      - ALLOWED_HOSTS
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/:/usr/share/nginx/html/api/docs/
       - static:/var/html/static/
       - media:/var/html/media/
+      - redoc:/usr/share/nginx/html/api/docs/
+    restart: always
     depends_on:
       - backend
       - frontend
