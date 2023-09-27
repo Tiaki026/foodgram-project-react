@@ -1,7 +1,7 @@
 # Продуктовый помощник Foodgram :pizza:
 
-# Содержание
-- [[:page_with_curl: Описание]([## :page_with_curl: Описание](https://github.com/Tiaki026/foodgram-project-react#page_with_curl-описание))](https://github.com/Tiaki026/foodgram-project-react#page_with_curl-описание)
+# Оглавление
+- [:page_with_curl: Описание](https://github.com/Tiaki026/foodgram-project-react#page_with_curl-описание)
 - [[:chart_with_upwards_trend: Процесс разработки, особенности и трудности](## :chart_with_upwards_trend: Процесс разработки, особенности и трудности)](https://github.com/Tiaki026/foodgram-project-react#chart_with_upwards_trend-процесс-разработки-особенности-и-трудности)
 - [https://github.com/Tiaki026/foodgram-project-react#computer-стек-технологий](https://github.com/Tiaki026/foodgram-project-react#computer-стек-технологий)
 - [:page_with_curl: Как воспользоваться проектом](## :page_with_curl: Как воспользоваться проектом)
