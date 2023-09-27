@@ -29,6 +29,7 @@ Django - это кропотливый процесс, и лучше всего 
 
   Django Rest Framework: Расширение для Django, предоставляющее функциональность REST API
 - ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+  
   Ubuntu: Операционная система
 - ![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?&style=for-the-badge&logo=postgresql&logoColor=white)
 
