@@ -1,8 +1,9 @@
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
-from recipes.models import Recipe, User
 from rest_framework import status
 from rest_framework.response import Response
+
+from recipes.models import Recipe, User
 from users.models import Subscription
 
 from .serializers import RecipeSerializer
