@@ -25,7 +25,7 @@ Django - это кропотливый процесс, и лучше всего 
   Ubuntu: Операционная система
 - ![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?&style=for-the-badge&logo=postgresql&logoColor=white)
 
-PostgreSQL: База данных
+  PostgreSQL: База данных
 - ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
   JavaScript: Язык программирования для создания динамических веб-страниц
