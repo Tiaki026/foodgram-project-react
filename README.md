@@ -52,6 +52,7 @@ Django - это кропотливый процесс, и лучше всего 
 cd foodgram-project-react/backend/
 ```
 2.	Создайте виртуальное окружение.
+
 Linux
 ```
 python3 -m venv venv
@@ -61,6 +62,7 @@ Windows
 python -m venv venv
 ```
 3.	Активируйте виртуальное окружение.
+
 Linux
 ```
 source venv/bin/activate
@@ -75,6 +77,7 @@ pip install -r requirements.txt
 ```
 5. Создайте .env [пример файла]()
 6.	Примените миграции.
+
 Linux
 ```
 python3 manage.py migrate
@@ -83,7 +86,8 @@ Windows
 ```
 python manage.py migrate
 ```
-7. Создайте админа
+7. Создайте админа.
+
 Linux
 ```
 python3 manage.py createsuperuser
