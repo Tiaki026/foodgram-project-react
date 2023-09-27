@@ -107,20 +107,6 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd foodgram
-          # sudo rm -f .env        
-          # sudo touch .env
-          # sudo chmod 600 .env
-          # sudo echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
-          # sudo echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
-          # sudo echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
-          # sudo echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-          # sudo echo DB_HOST=${{ secrets.DB_HOST }} >> .env
-          # sudo echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-          # sudo echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-          # sudo echo DEBUG=False >> .env
-          # ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
-          # sudo echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
-
           # Выполняет pull образов с Docker Hub
           sudo docker compose -f docker-compose.yml pull
           # Перезапускает все контейнеры в Docker Compose
@@ -141,3 +127,4 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: Деплой **foodgram** успешно выполнен! 👍🏼
+
