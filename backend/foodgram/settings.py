@@ -67,7 +67,7 @@ if DEBUG:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv("DB_ENGINE", default='default_postgresql'),
+            'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
             'NAME': os.getenv('POSTGRES_DB', default='default_db'),
             'USER': os.getenv('POSTGRES_USER', default='default_user'),
             'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='default_password'),
