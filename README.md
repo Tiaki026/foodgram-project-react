@@ -18,7 +18,7 @@ Foodgram — социальная сеть для обмена рецептам�
 
 Django - это кропотливый процесс, и лучше всего изучать и совершенствовать свои навыки.
 
-## Стек технологий
+## :computer: Стек технологий
 - ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
   Python: Язык программирования
@@ -83,7 +83,7 @@ source venv/Scripts/activate
 ```
 pip install -r requirements.txt
 ```
-5. Создайте .env [пример файла](https://github.com/Tiaki026/foodgram-project-react/blob/master/.env.example)
+5. Создайте .env :open_file_folder: [пример файла](https://github.com/Tiaki026/foodgram-project-react/blob/master/.env.example)
 6.	Примените миграции.
 
 Linux
@@ -119,7 +119,7 @@ python manage.py loaddata data/tags.json
 Настройка находится в BIOS. Здесь уже все индивидуально. Чаще всего это настройка процессора -> Virtualization.
 
 Установите Docker:
- - Для Windows [скачать](https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe?utm_source=docker&utm_medium=webreferral&utm_campaign=dd-smartbutton&utm_location=module)
+ - Для Windows :open_file_folder: [скачать](https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe?utm_source=docker&utm_medium=webreferral&utm_campaign=dd-smartbutton&utm_location=module)
  - Для Linux
 ```
 sudo apt update
@@ -130,15 +130,15 @@ sudo apt-get install docker-compose-plugin
 ```
 Создаем Dockerfile
 
- [Dockerfile_backend](https://github.com/Tiaki026/foodgram-project-react/blob/master/backend/Dockerfile)
+ :open_file_folder: [Dockerfile_backend](https://github.com/Tiaki026/foodgram-project-react/blob/master/backend/Dockerfile)
  
- [Dockerfile_frontend](https://github.com/Tiaki026/foodgram-project-react/blob/master/frontend/Dockerfile)
+ :open_file_folder: [Dockerfile_frontend](https://github.com/Tiaki026/foodgram-project-react/blob/master/frontend/Dockerfile)
 
- [Conf nginx](https://github.com/Tiaki026/foodgram-project-react/blob/master/infra/nginx.conf)
+ :open_file_folder: [Conf nginx](https://github.com/Tiaki026/foodgram-project-react/blob/master/infra/nginx.conf)
 
  Создаем docker-compose.yml
 
- [docker-compose](https://github.com/tetrapack55/foodgram-project-react/blob/master/infra/docker-compose.yml)
+ :open_file_folder: [docker-compose](https://github.com/tetrapack55/foodgram-project-react/blob/master/infra/docker-compose.yml)
 
 Команды для проверки docker-compose
 ```
@@ -151,7 +151,7 @@ docker compose up --build   # Создает новые контейнеры и 
 Если запуск локальный, то можно воспользоваться docker-compose.yml. В папке с файлом выполнить команду `docker compose up --build`.
 Для того чтобы развернуть проект на сервере - создаем main.yml. Проще это сделать на github, после чего выполнить команду `git pull`. Файл окажется в папке проекта.
 
- [main.yml]()
+:open_file_folder: [main.yml]()
 При заполнении файла создаются секретные ключи, которые хранятся на Вашем github в разеделе <папка проекта> -> settings -> secterts and variables -> actions.
 
 `DOCKER_USERNAME` - имя пользователя от DockerHub
@@ -173,8 +173,8 @@ docker compose up --build   # Создает новые контейнеры и 
 Если в [main.yml] все написано верно, то после команды `git push` на github в actions начнется тестирование образов (если имеются тесты), создадутся образы Docker, запушатся на Dockerhub, после загрузятся на удаленный сервер и запустятся. А так же в телеграм отправится сообщение от бота, что проект успешно задеплоен.
 
 ## :shipit: Как убидиться что проект работает?
-Для этого вам понадобится [Postman](https://dl.pstmn.io/download/latest/win64)
-В проекте присутствует [файл](https://github.com/Tiaki026/foodgram-project-react/blob/master/postman-collection/diploma.postman_collection.json) для postman, с его помощью можно проверить работоспособность.
+Для этого вам понадобится :open_file_folder: [Postman](https://dl.pstmn.io/download/latest/win64)
+В проекте присутствует :open_file_folder: [файл](https://github.com/Tiaki026/foodgram-project-react/blob/master/postman-collection/diploma.postman_collection.json) для postman, с его помощью можно проверить работоспособность.
 
 P.S.: Не все тесты настроены хорошо, для некоторых нужно будет прописать переменные.
 В Environment создайте новое окружение `New Environment`. В `Variable` напишите название переменных, в `Initial value` их значение.
