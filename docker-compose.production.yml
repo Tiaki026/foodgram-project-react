@@ -40,7 +40,7 @@ services:
       - ./frontend/:/app/result_build/
 
   nginx:
-    image: nginx:1.21.3
+    image: tiaki2601/foodgram_nginx:latest
     ports:
       - "8000:80"
     env_file: .env
