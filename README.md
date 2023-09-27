@@ -249,6 +249,7 @@ ingredientNameFirstLatter   абрикос
 
 ## Автор:
   - [Колотиков Евгений](https://github.com/Tiaki026)
+## 
 
 
-    ## [:top: Путь наверх :top:](https://github.com/Tiaki026/foodgram-project-react/blob/master/README.md#оглавление)
+  ## [:top: Путь наверх :top:](https://github.com/Tiaki026/foodgram-project-react/blob/master/README.md#оглавление)
