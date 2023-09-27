@@ -1,20 +1,15 @@
 # flake8: noqa
 import os
 from pathlib import Path
-# from dotenv import load_dotenv
-
-# load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='123no_key321asf5674r84g5f6h4t84h2gj46tj423')
-# SECRET_KEY = 'django-insecure-o9#6w)8v%9xf4eb%skywm+(ny^j%t^q*w&e#5y8xj+66!zm)i4'
-ALLOWED_HOSTS = ['*']
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1').split(',')
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1').split(',')
 
 DEBUG = os.getenv('DEBUG')
-# DEBUG = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -109,11 +104,9 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-# STATIC_ROOT = BASE_DIR / STATIC_URL
 STATIC_ROOT = BASE_DIR / STATIC_URL
 
 MEDIA_URL = 'media/'
-# MEDIA_ROOT = BASE_DIR / MEDIA_URL
 MEDIA_ROOT = BASE_DIR / MEDIA_URL
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -129,9 +122,6 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'PAGE_SIZE': 6
-
 }
 
 DJOSER = {
@@ -144,11 +134,7 @@ DJOSER = {
 
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-        # 'user': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
-        # 'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
         'user_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
-        # 'resipe': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
-        # 'recipe_list': ['api.permissions.IsAdminOrOwnerOrReadOnly'],
     },
 
     'LOGIN_FIELD': 'email',

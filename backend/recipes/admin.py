@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.admin.widgets import AdminURLFieldWidget
 from django.utils.html import format_html
 
 from .models import (AmountRecipeIngredients, Favorite, Ingredient, Recipe,
@@ -10,11 +9,7 @@ from .models import (AmountRecipeIngredients, Favorite, Ingredient, Recipe,
 class AmountRecipeIngredientsAdmin(admin.ModelAdmin):
     """Администрирование общего количесвта ингридиентов."""
 
-    # list_display = ['recipe', 'ingredients', 'amount']
-    # list_filter = ['recipe', 'ingredients']
-    # search_fields = ['recipe__name', 'ingredient__name']
     fields = ['recipe', 'ingredients', 'amount']
-    pass
 
 
 class AmountRecipeIngredientsInline(admin.TabularInline):

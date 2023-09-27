@@ -1,18 +1,14 @@
 from typing import Type
 
-from rest_framework.permissions import AllowAny
-from django.http.response import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
+from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart, Tag,
+                            User)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (SAFE_METHODS, DjangoModelPermissions,
-                                        IsAuthenticated)
-from rest_framework.response import Response
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.request import Request
-
-from recipes.models import (Favorite, Ingredient,
-                            Recipe, ShoppingCart, Tag, User)
+from rest_framework.response import Response
 
 from .filters import IngredientFilter, RecipeFilter
 from .generator import ShoppingCartFileGenerator
@@ -21,7 +17,7 @@ from .paginator import CustomPagination
 from .permissions import IsAdminOrOwnerOrReadOnly, IsAdminOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeReadSerializer, RecipeSerializer,
-                          TagSerializer, SubscriptionSerializer)
+                          SubscriptionSerializer, TagSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -30,7 +26,6 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAdminOrReadOnly]
-    # pagination_class = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -41,7 +36,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = IngredientFilter
-    # pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
@@ -110,7 +104,6 @@ class UserViewSet(UserViewSet, UserMixin):
 
     queryset = User.objects.all()
     pagination_class = CustomPagination
-    # permission_classes = [DjangoModelPermissions]
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     serializer_class = SubscriptionSerializer
 

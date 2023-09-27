@@ -1,9 +1,8 @@
-from .validators import (
-    validate_email, validate_name,
-    validate_nickname, validate_password
-)
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+from .validators import (validate_email, validate_name, validate_nickname,
+                         validate_password)
 
 
 class CustomUser(AbstractUser):

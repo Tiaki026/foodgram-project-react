@@ -1,8 +1,9 @@
-from .validators import validate_tag, validate_hex_color
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
+from django.db import models
+
 from .common import upload_to
+from .validators import validate_hex_color, validate_tag
 
 User = get_user_model()
 

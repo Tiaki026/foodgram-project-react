@@ -6,13 +6,12 @@ from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (AmountRecipeIngredients, Ingredient, Recipe, Tag,
+                            User)
 from rest_framework import status
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
-
-from recipes.models import (AmountRecipeIngredients, Ingredient, Recipe, Tag,
-                            User)
 from users.models import Subscription
 
 
@@ -21,7 +20,6 @@ class TagSerializer(ModelSerializer):
 
     class Meta:
         model = Tag
-        # fields = ['id', 'name', 'color', 'slug']
         fields = '__all__'
         read_only_fields = ['__all__']
 
@@ -31,7 +29,6 @@ class IngredientSerializer(ModelSerializer):
 
     class Meta:
         model = Ingredient
-        # fields = ['id', 'name', 'measurement_unit']
         fields = '__all__'
         read_only_fields = ['__all__']
 
@@ -111,7 +108,6 @@ class CustomUserSerializer(UserSerializer):
         return Subscription.objects.filter(
             user=request_user, author=obj
         ).exists()
-        # return request_user.subscriber.filter(author=obj).exists()
 
 
 class SubscriptionSerializer(CustomUserSerializer):
@@ -132,7 +128,6 @@ class SubscriptionSerializer(CustomUserSerializer):
 
     def validate(self, validated_data: Dict) -> Subscription:
         """Проверка подписки."""
-        # author = self.context['request'].user
         user = validated_data['user']
         author = get_object_or_404(User, pk=id)
         if Subscription.objects.filter(
@@ -287,10 +282,6 @@ class RecipeReadSerializer(ModelSerializer):
             'tags', 'image', 'text', 'cooking_time',
             'pub_date', 'is_favorited', 'is_in_shopping_cart'
         ]
-        # read_only_fields = [
-        #     'author', 'is_favorited', 'is_in_shopping_cart', 'tags'
-        # ]
-        # read_only_fields = ['__all__']
 
     def get_is_favorited(self, recipe: Recipe) -> bool:
         """Находится ли рецепт в избраном."""
