@@ -5,11 +5,11 @@
 - [:chart_with_upwards_trend: Процесс разработки, особенности и трудности](https://github.com/Tiaki026/foodgram-project-react#chart_with_upwards_trend-процесс-разработки-особенности-и-трудности)
 - [:computer: Стек технологий](https://github.com/Tiaki026/foodgram-project-react#computer-стек-технологий)
 - [:page_with_curl: Как воспользоваться проектом](https://github.com/Tiaki026/foodgram-project-react#page_with_curl-как-воспользоваться-проектом)
-- - [Настройка бэкенд-приложения](https://github.com/Tiaki026/foodgram-project-react#настройка-бэкенд-приложения)
+  - [Настройка бэкенд-приложения](https://github.com/Tiaki026/foodgram-project-react#настройка-бэкенд-приложения)
   - [Загрузка базы данных](https://github.com/Tiaki026/foodgram-project-react#загрузка-базы-данных)
   - [Docker](https://github.com/Tiaki026/foodgram-project-react#docker)
 - [:shipit: Как убедиться что проект работает?](https://github.com/Tiaki026/foodgram-project-react#shipit-как-убедиться-что-проект-работает)
-- - [Подготовка Django-проекта к запуску коллекции](https://github.com/Tiaki026/foodgram-project-react#подготовка-django-проекта-к-запуску-коллекции)
+  - [Подготовка Django-проекта к запуску коллекции](https://github.com/Tiaki026/foodgram-project-react#подготовка-django-проекта-к-запуску-коллекции)
   - [Запуск коллекции](https://github.com/Tiaki026/foodgram-project-react#запуск-коллекции)
   - [Повторный запуск коллекции](https://github.com/Tiaki026/foodgram-project-react#повторный-запуск-коллекции)
   - [Ограничения от разработчиков Postman](https://github.com/Tiaki026/foodgram-project-react#ограничения-от-разработчиков-postman)
@@ -250,4 +250,4 @@ ingredientNameFirstLatter   абрикос
 ## Автор:
   - [Колотиков Евгений](https://github.com/Tiaki026)
 
-[:top:](https://github.com/Tiaki026/foodgram-project-react#продуктовый-помощник-foodgram-pizza)
+![Путь на верх](https://em-content.zobj.net/thumbs/320/facebook/111/top-with-upwards-arrow-above_1f51d.png)(https://github.com/Tiaki026/foodgram-project-react#продуктовый-помощник-foodgram-pizza)
