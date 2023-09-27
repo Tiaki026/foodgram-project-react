@@ -151,7 +151,7 @@ docker compose up --build   # Создает новые контейнеры и 
 Если запуск локальный, то можно воспользоваться docker-compose.yml. В папке с файлом выполнить команду `docker compose up --build`.
 Для того чтобы развернуть проект на сервере - создаем main.yml. Проще это сделать на github, после чего выполнить команду `git pull`. Файл окажется в папке проекта.
 
-:open_file_folder: [main.yml]()
+:open_file_folder: [main.yml](https://github.com/Tiaki026/foodgram-project-react/blob/master/.github/workflows/main.yml)
 
 При заполнении файла создаются секретные ключи, которые хранятся на Вашем github в разеделе <папка проекта> -> settings -> secterts and variables -> actions.
 
