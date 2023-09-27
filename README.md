@@ -75,7 +75,7 @@ source venv/Scripts/activate
 ```
 pip install -r requirements.txt
 ```
-5. Создайте .env [пример файла]()
+5. Создайте .env [пример файла](https://github.com/Tiaki026/foodgram-project-react/blob/master/.env.example)
 6.	Примените миграции.
 
 Linux
