@@ -41,7 +41,11 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     """Вьюсет рецептов."""
 
-    queryset = Recipe.objects.select_related('author')
+    queryset = Recipe.objects.select_related(
+        'author'
+    ).prefetch_related(
+        'recipes', 'in_favorited', 'in_shopping'
+    )
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
     pagination_class = CustomPagination
