@@ -16,7 +16,7 @@ services:
       - DB_HOST
       - DB_PORT
     volumes:
-      - pg_data_production:/var/lib/postgresql/data/
+      - pg_data_production:/var/lib/postgresql/data
     restart: always
 
   backend:
@@ -27,8 +27,8 @@ services:
       - SECRET_KEY
       - DEBUG
     volumes:
-      - static_volume:/app/static/
-      - media_volume:/app/media/
+      - static_volume:/app/static
+      - media_volume:/app/media
       - redoc:/app/docs/
     restart: always
     depends_on:
