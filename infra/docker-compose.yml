@@ -40,7 +40,6 @@ services:
       - ./frontend/:/app/result_build/
 
   nginx:
-    # image: tiaki2601/foodgram_nginx:latest
     image: nginx:1.21.3
     ports:
       - 8080:80
