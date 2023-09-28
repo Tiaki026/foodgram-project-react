@@ -1,5 +1,7 @@
 # Продуктовый помощник Foodgram :pizza:
 
+Посетить [:icecream: foodgram](https://foodyamyam.sytes.net)
+
 # Оглавление
 - [:page_with_curl: Описание](https://github.com/Tiaki026/foodgram-project-react#page_with_curl-описание)
 - [:chart_with_upwards_trend: Процесс разработки, особенности и трудности](https://github.com/Tiaki026/foodgram-project-react#chart_with_upwards_trend-процесс-разработки-особенности-и-трудности)
@@ -16,6 +18,9 @@
 - [:ledger: Заключение](https://github.com/Tiaki026/foodgram-project-react#ledger-заключение)
 - [Автор](https://github.com/Tiaki026/foodgram-project-react#автор)
 
+Для проверки диплома:
+  админ - admin5 \ Admin123 \ admin5@admin.ru
+  
 
 ## :page_with_curl: Описание
 Foodgram — социальная сеть для обмена рецептами. Это полностью рабочий проект, который состоит из бэкенд-приложения на Django и фронтенд-приложения на React. В нем Вы можете разместить рецепты вкусных блюд, подписаться на понравившихся авторов, добавлять самые лучшие рецепты вкусных блюд в избранное, а так же создавать список покупок добавляя туда рецепты. Проект сам посчитает нужные ингредиенты из рецептов, который Вы можете скачать.
