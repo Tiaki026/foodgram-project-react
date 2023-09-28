@@ -1,6 +1,6 @@
 # Продуктовый помощник Foodgram :pizza:
 
-Посетить [:icecream: foodgram](https://foodyamyam.sytes.net)
+## Посетить [:icecream: foodgram](https://foodyamyam.sytes.net)
 
 # Оглавление
 - [:page_with_curl: Описание](https://github.com/Tiaki026/foodgram-project-react#page_with_curl-описание)
