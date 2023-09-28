@@ -1,6 +1,7 @@
 # flake8: noqa
 import os
 from pathlib import Path
+from decouple import config
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,7 +12,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1').split(',')
 # ALLOWED_HOSTS = ['*']
 DEBUG = os.getenv('DEBUG', False) == 'True'
 
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS', default='localhost')]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
