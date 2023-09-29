@@ -103,11 +103,6 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
             return generate_method(shopping_cart)
         return Response()
 
-    def some_view(request):
-        if not request.POST.get('ingredient'):
-            response_data = {'error': 'Поле ингредиента не должно быть пустым'}
-            return JsonResponse(response_data, status=400)
-
 
 class UserViewSet(UserViewSet, UserMixin):
     """Вьюсет пользователя."""
