@@ -31,11 +31,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
     @admin.display(description='Подписчики')
     def is_subcribed(self, obj: Subscription) -> bool:
-        """Проверка избранных рецептов.
-
-        Проверяет, есть ли избранные рецепты у пользователя
-        и выдает количесвто.
-        """
+        """Счетчик подписчиков."""
         count = obj.subscribing.count()
         if count > 0:
             return f'{count} ❤️'
