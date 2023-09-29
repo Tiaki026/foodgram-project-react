@@ -47,8 +47,11 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     queryset = Recipe.objects.select_related(
         'author'
     ).prefetch_related(
-        'tags', 'ingredients', 'recipe_amount',
-        'in_shopping', 'in_favorited',
+        'tags',
+        'ingredients',
+        'recipe_amount__ingredients_amount',
+        'in_favorited__user',
+        'in_shopping__user',
     )
 # Prefetch('recipe_amount',
 # queryset=AmountRecipeIngredients.objects.select_related('ingredients')),
