@@ -50,8 +50,8 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
             'recipe_amount',
             queryset=AmountRecipeIngredients.objects.select_related(
                 'ingredients'
-                )
-            ),
+            )
+        ),
         Prefetch(
             'in_favorited',
             queryset=Favorite.objects.select_related('user')
