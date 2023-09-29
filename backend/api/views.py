@@ -1,6 +1,6 @@
 from typing import Type
 
-# from django.db.models import Prefetch
+from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart, Tag,
@@ -42,29 +42,15 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     """Вьюсет рецептов."""
 
-    # queryset = Recipe.objects.select_related(
-    #     'recipes', 'in_favorited__user',
-    #     'in_shopping__user',
-    # )
-    queryset = Recipe.objects.select_related(
-        'author'
+    queryset = Recipe.objects.select_related('author').prefetch_related(
+        'tags',
+        'recipe_amount__ingredients',
+        'in_favorited',
+        'in_shopping',
+    ).annotate(
+        total_favorites=Count('in_favorited'),
+        total_shopping_cart=Count('in_shopping'),
     )
-    # .prefetch_related(
-    #     'tags',
-    #     Prefetch(
-    #         'recipe_amount__ingredients_amount',
-    #         queryset=AmountRecipeIngredients.objects.select_related(
-    #             'ingredients'
-    #         ),
-    #     ),
-    #     Prefetch('in_favorited__user', queryset=User.objects.only(
-    #         'id', 'username'
-    #     )),
-    #     Prefetch('in_shopping__user', queryset=User.objects.only(
-    #         'id', 'username'
-    #     )),
-    # )
-
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
     pagination_class = CustomPagination
