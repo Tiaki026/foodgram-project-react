@@ -57,8 +57,12 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
                 'ingredients'
             ),
         ),
-        Prefetch('in_favorited__user', queryset=User.objects.only('id')),
-        Prefetch('in_shopping__user', queryset=User.objects.only('id')),
+        Prefetch('in_favorited__user', queryset=User.objects.only(
+            'id', 'username'
+        )),
+        Prefetch('in_shopping__user', queryset=User.objects.only(
+            'id', 'username'
+        )),
     )
 
     permission_classes = [IsAdminOrOwnerOrReadOnly]
