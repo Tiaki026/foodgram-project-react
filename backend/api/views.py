@@ -50,7 +50,7 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     ).annotate(
         total_favorites=Count('in_favorited'),
         total_shopping_cart=Count('in_shopping'),
-    )
+    ).order_by('-pub_date')
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
     pagination_class = CustomPagination
