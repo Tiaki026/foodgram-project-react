@@ -16,10 +16,10 @@ from .generator import ShoppingCartFileGenerator
 from .mixins import RecipeMixin, UserMixin
 from .paginator import CustomPagination
 from .permissions import IsAdminOrOwnerOrReadOnly, IsAdminOrReadOnly
-from .serializers import (IngredientSerializer, RecipeCreateSerializer,
-                          RecipeReadSerializer, RecipeSerializer,
-                          SubscriptionSerializer, TagSerializer,
-                          AmountRecipeIngredients)
+from .serializers import (AmountRecipeIngredients, IngredientSerializer,
+                          RecipeCreateSerializer, RecipeReadSerializer,
+                          RecipeSerializer, SubscriptionSerializer,
+                          TagSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
