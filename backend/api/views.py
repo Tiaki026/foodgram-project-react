@@ -1,6 +1,6 @@
 from typing import Type
 
-# from django.db.models import Prefetch
+from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart, Tag,
@@ -18,9 +18,8 @@ from .paginator import CustomPagination
 from .permissions import IsAdminOrOwnerOrReadOnly, IsAdminOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeReadSerializer, RecipeSerializer,
-                          SubscriptionSerializer, TagSerializer)
-
-#   AmountRecipeIngredients)
+                          SubscriptionSerializer, TagSerializer,
+                          AmountRecipeIngredients)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -44,16 +43,23 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     """Вьюсет рецептов."""
 
+    # queryset = Recipe.objects.select_related(
+    #     'recipes', 'in_favorited__user',
+    #     'in_shopping__user',
+    # )
     queryset = Recipe.objects.select_related(
-        'recipes', 'in_favorited__user',
-        'in_shopping__user',
+        'author'
+    ).prefetch_related(
+        'tags',
+        Prefetch(
+            'recipe_amount__ingredients_amount',
+            queryset=AmountRecipeIngredients.objects.select_related(
+                'ingredients'
+            ),
+        ),
+        Prefetch('in_favorited__user', queryset=User.objects.only('id')),
+        Prefetch('in_shopping__user', queryset=User.objects.only('id')),
     )
-# Prefetch('recipe_amount',
-# queryset=AmountRecipeIngredients.objects.select_related('ingredients')),
-# Prefetch('in_favorited',
-# queryset=Favorite.objects.select_related('user')),
-# Prefetch('in_shopping',
-# queryset=ShoppingCart.objects.select_related('user')),
 
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
