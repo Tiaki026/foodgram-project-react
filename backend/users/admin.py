@@ -9,7 +9,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
     model = CustomUser
     list_display = [
-        'username', 'email', 'first_name', 'last_name', 'is_subcribed'
+        'username', 'email', 'first_name', 'last_name', 'is_subscribing'
     ]
     list_filter = ['is_staff', 'is_superuser', 'email']
     search_fields = ['username', 'email']
@@ -30,7 +30,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
 
     @admin.display(description='Подписчики')
-    def is_subcribed(self, obj: Subscription) -> bool:
+    def is_subscribing(self, obj: Subscription) -> bool:
         """Счетчик подписчиков."""
         count = obj.subscribing.count()
         if count > 0:
