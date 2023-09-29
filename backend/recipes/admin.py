@@ -5,6 +5,17 @@ from .models import (AmountRecipeIngredients, Favorite, Ingredient, Recipe,
                      ShoppingCart, Tag)
 
 
+def tag_color(tag: Tag):
+    """Превью цвета тегов."""
+    color_map = {
+        'breakfast': '🟠',
+        'dinner': '🟢',
+        'evening meal': '🟣',
+    }
+
+    return f'{tag.name} {color_map.get(tag.slug, "")}'
+
+
 @admin.register(AmountRecipeIngredients)
 class AmountRecipeIngredientsAdmin(admin.ModelAdmin):
     """Администрирование общего количесвта ингридиентов."""
@@ -25,7 +36,8 @@ class RecipeAdmin(admin.ModelAdmin):
     """Администрирование рецептов."""
 
     list_display = [
-        'name', 'id', 'author', 'pub_date', 'is_favorited', 'is_image'
+        'name', 'id', 'author', 'pub_date',
+        'color_preview', 'is_favorited', 'is_image',
     ]
     list_filter = ['author', 'name', 'tags']
     search_fields = ['author__username', 'name', 'tags__name']
@@ -56,7 +68,13 @@ class RecipeAdmin(admin.ModelAdmin):
                 obj.image.url
             )
         else:
-            return "Нет изображения"
+            return 'Нет изображения'
+
+    @admin.display(description='Теги')
+    def color_preview(self, obj: Recipe):
+        """Цвет тега в рецептах."""
+        tags = obj.tags.all()
+        return ', '.join([tag_color(tag) for tag in tags])
 
 
 @admin.register(Ingredient)
@@ -72,9 +90,15 @@ class IngredientAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     """Администрирование тегов."""
 
-    list_display = ['name', 'color', 'slug']
+    list_display = ['name', 'color', 'color_preview', 'slug']
     search_fields = ['name']
     prepopulated_fields = {'slug': ['name']}
+
+    @admin.display(description='Цвет тега')
+    def color_preview(self, obj: Tag):
+        """Цвет тега."""
+        return tag_color(obj)
+
 
 
 @admin.register(ShoppingCart)
