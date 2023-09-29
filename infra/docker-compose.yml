@@ -6,21 +6,19 @@ volumes:
   media_volume: 
   redoc: 
 
- 
-
 services: 
   db: 
-    image: postgres:13 
-    env_file: .env 
-    environment: 
-      - POSTGRES_DB 
-      - POSTGRES_USER 
-      - POSTGRES_PASSWORD 
-      - DB_HOST 
-      - DB_PORT 
-    volumes: 
-      - pg_data_production:/var/lib/postgresql/data 
-    restart: always 
+    image: postgres:13
+    env_file: .env
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - DB_HOST
+      - DB_PORT
+    volumes:
+      - pg_data_production:/var/lib/postgresql/data
+    restart: always
 
   backend: 
     image: tiaki2601/foodgram_backend:latest 
@@ -44,7 +42,7 @@ services:
       - ./frontend/:/app/result_build/ 
 
   nginx: 
-    image: nginx:1.21.3 
+    image: tiaki2601/foodgram_nginx:latest 
     ports: 
       - 8080:80 
     env_file: .env 
