@@ -47,10 +47,10 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
         'recipe_amount__ingredients',
         'in_favorited',
         'in_shopping',
-    ).annotate(
-        total_favorites=Count('in_favorited'),
-        total_shopping_cart=Count('in_shopping'),
     ).order_by('-pub_date')
+    # ).annotate(
+    #     total_favorites=Count('in_favorited'),
+    #     total_shopping_cart=Count('in_shopping'),
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
     pagination_class = CustomPagination
