@@ -100,7 +100,6 @@ class TagAdmin(admin.ModelAdmin):
         return tag_color(obj)
 
 
-
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     """Администрирование списка покупок."""

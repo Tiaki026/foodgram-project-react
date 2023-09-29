@@ -1,5 +1,6 @@
 from typing import Type
 
+from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart, Tag,
@@ -101,6 +102,11 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
             shopping_cart = generator.create_shopping_cart_list()
             return generate_method(shopping_cart)
         return Response()
+
+    def some_view(request):
+        if not request.POST.get('ingredient'):
+            response_data = {'error': 'Поле ингредиента не должно быть пустым'}
+            return JsonResponse(response_data, status=400)
 
 
 class UserViewSet(UserViewSet, UserMixin):
