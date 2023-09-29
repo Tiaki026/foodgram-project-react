@@ -1,6 +1,6 @@
 from typing import Type
 
-from django.db.models import Count
+# from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart, Tag,
