@@ -8,7 +8,9 @@ class CustomUserAdmin(admin.ModelAdmin):
     """Администрирование пользователей."""
 
     model = CustomUser
-    list_display = ['username', 'email', 'first_name', 'last_name']
+    list_display = [
+        'username', 'email', 'first_name', 'last_name', 'is_subcribed'
+    ]
     list_filter = ['is_staff', 'is_superuser', 'email']
     search_fields = ['username', 'email']
     readonly_fields = ('last_login',)
@@ -26,6 +28,17 @@ class CustomUserAdmin(admin.ModelAdmin):
             'fields': ('username', 'email', 'password1', 'password2'),
         }),
     )
+
+    @admin.display(description='Подписчики')
+    def is_subcribed(self, obj: Subscription) -> bool:
+        """Проверка избранных рецептов.
+
+        Проверяет, есть ли избранные рецепты у пользователя
+        и выдает количесвто.
+        """
+        count = obj.subscribing.count()
+        if count > 0:
+            return f'{count} ❤️'
 
 
 @admin.register(Subscription)
