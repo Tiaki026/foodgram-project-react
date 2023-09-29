@@ -19,7 +19,7 @@
 - [Автор](https://github.com/Tiaki026/foodgram-project-react#автор)
 
 Для проверки диплома:
-  админ - admin5 \ Admin123 \ admin5@admin.ru
+  админ - admin \ Admin123 \ admin@admin.ru
   
 
 ## :page_with_curl: Описание
