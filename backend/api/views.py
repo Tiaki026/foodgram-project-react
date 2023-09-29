@@ -1,6 +1,5 @@
 from typing import Type
 
-# from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart, Tag,
@@ -48,9 +47,6 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
         'in_favorited',
         'in_shopping',
     ).order_by('-pub_date')
-    # ).annotate(
-    #     total_favorites=Count('in_favorited'),
-    #     total_shopping_cart=Count('in_shopping'),
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
     pagination_class = CustomPagination
