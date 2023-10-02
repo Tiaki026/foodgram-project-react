@@ -8,7 +8,6 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (AmountRecipeIngredients, Ingredient, Recipe, Tag,
                             User)
-from rest_framework import status
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
@@ -132,11 +131,11 @@ class SubscriptionSerializer(CustomUserSerializer):
         author = self.instance
 
         if user == author:
-            raise ValidationError("Вы не можете подписаться на себя.")
+            raise ValidationError('Вы не можете подписаться на себя.')
         if Subscription.objects.filter(
             user=user, author=author
         ).exists():
-            raise ValidationError("Вы уже подписаны на этого пользователя.")
+            raise ValidationError('Вы уже подписаны')
         if not Subscription.objects.filter(
                 user=user, author=author
         ).exists():
