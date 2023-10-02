@@ -3,7 +3,7 @@ from io import BytesIO
 from django.db.models import Sum
 from django.http import HttpResponse
 from docx import Document
-from recipes.models import AmountRecipeIngredient
+from recipes.models import AmountRecipeIngredients
 from reportlab.pdfgen import canvas
 
 
@@ -17,7 +17,7 @@ class ShoppingCartFileGenerator:
         self.filename = f'{self.user.username}_ingredient_list'
 
     def get_recipe_name(self):
-        recipes = AmountRecipeIngredient.objects.filter(
+        recipes = AmountRecipeIngredients.objects.filter(
             recipe__in_shopping__user=self.user
         ).values('recipe__name').distinct()
         return [recipe_info['recipe__name'] for recipe_info in recipes]
@@ -35,7 +35,7 @@ class ShoppingCartFileGenerator:
             f'Для этого понадобятся:\n'
         ]
         ingredient = (
-            AmountRecipeIngredient.objects.filter(
+            AmountRecipeIngredients.objects.filter(
                 recipe__in_shopping__user=self.user
             ).values(
                 'ingredient__name',

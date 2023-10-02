@@ -1,6 +1,6 @@
 from typing import Type
 
-# from django.db.models import Prefetch
+from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart, Tag,
@@ -18,7 +18,8 @@ from .paginator import CustomPagination
 from .permissions import IsAdminOrOwnerOrReadOnly, IsAdminOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeReadSerializer, RecipeSerializer,
-                          SubscriptionSerializer, TagSerializer)
+                          SubscriptionSerializer, TagSerializer,
+                          AmountRecipeIngredients)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -42,16 +43,15 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     """Вьюсет рецептов."""
 
-    # queryset = Recipe.objects.select_related('author').prefetch_related(
-    #     'tags',
-    #     Prefetch(
-    #         'recipe_amount',
-    #         queryset=AmountRecipeIngredient.objects.select_related(
-    #             'ingredient'
-    #         )
-    #     ),
-    # )
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.select_related('author').prefetch_related(
+        'tags',
+        Prefetch(
+            'recipe_amount',
+            queryset=AmountRecipeIngredients.objects.select_related(
+                'ingredient'
+            )
+        ),
+    )
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
     pagination_class = CustomPagination

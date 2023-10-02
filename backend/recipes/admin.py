@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import (AmountRecipeIngredient, Favorite, Ingredient, Recipe,
+from .models import (AmountRecipeIngredients, Favorite, Ingredient, Recipe,
                      ShoppingCart, Tag)
 
 
@@ -16,17 +16,17 @@ def tag_color(tag: Tag):
     return f'{tag.name} {color_map.get(tag.slug, "")}'
 
 
-@admin.register(AmountRecipeIngredient)
+@admin.register(AmountRecipeIngredients)
 class AmountRecipeIngredientsAdmin(admin.ModelAdmin):
     """Администрирование общего количесвта ингридиентов."""
 
-    fields = ['recipe', 'ingredients', 'amount']
+    fields = ['recipe', 'ingredient', 'amount']
 
 
 class AmountRecipeIngredientsInline(admin.TabularInline):
     """Класс связанных объектов."""
 
-    model = AmountRecipeIngredient
+    model = AmountRecipeIngredients
     extra = 1
     min_num = 1
 

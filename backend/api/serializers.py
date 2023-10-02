@@ -6,7 +6,7 @@ from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (AmountRecipeIngredient, Ingredient, Recipe, Tag,
+from recipes.models import (AmountRecipeIngredients, Ingredient, Recipe, Tag,
                             User)
 from rest_framework import status
 from rest_framework.fields import IntegerField, SerializerMethodField
@@ -47,7 +47,7 @@ class RecipeSerializer(ModelSerializer):
     read_only_fields = ['__all__']
 
 
-class AmountRecipeIngredientSerializer(ModelSerializer):
+class AmountRecipeIngredientsSerializer(ModelSerializer):
     """Сериализатор количества ингредиентов."""
 
     id = PrimaryKeyRelatedField(
@@ -58,7 +58,7 @@ class AmountRecipeIngredientSerializer(ModelSerializer):
     amount = IntegerField(write_only=True)
 
     class Meta:
-        model = AmountRecipeIngredient
+        model = AmountRecipeIngredients
         fields = ['id', 'recipe', 'amount']
 
 
@@ -126,31 +126,22 @@ class SubscriptionSerializer(CustomUserSerializer):
         ]
         read_only_fields = ['__all__']
 
-    def validate(self, validated_data: Dict) -> Subscription:
+    def validate(self, data: Dict) -> Subscription:
         """Проверка подписки."""
-        user = validated_data['user']
-        author = get_object_or_404(User, pk=id)
-        if Subscription.objects.filter(
-            subscriber=user, author=author
-        ).exists():
-            raise ValidationError(
-                f'Вы уже подписаны на {author}.',
-                code=status.HTTP_400_BAD_REQUEST
-            )
+        user = self.context.get('request').user
+        author = self.instance
+
         if user == author:
-            return ValidationError(
-                f'{author} не может подписаться на {author}',
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        if not Subscription.objects.filter(
-            user=user,
-            author=author
+            raise ValidationError("Вы не можете подписаться на себя.")
+        if Subscription.objects.filter(
+            user=user, author=author
         ).exists():
-            return ValidationError(
-                'Действие невозможно',
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Subscription.objects.create(author=author, user=user)
+            raise ValidationError("Вы уже подписаны на этого пользователя.")
+        if not Subscription.objects.filter(
+                user=user, author=author
+        ).exists():
+            raise ValidationError('Действие невозможно!')
+        return data
 
     def get_recipes_count(self, user: User) -> int:
         """Количесвтво рецептов."""
@@ -164,7 +155,7 @@ class RecipeCreateSerializer(ModelSerializer):
     tags = PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
-    ingredients = AmountRecipeIngredientSerializer(many=True)
+    ingredients = AmountRecipeIngredientsSerializer(many=True)
 
     image = Base64ImageField(required=True, allow_null=False)
 
@@ -213,13 +204,13 @@ class RecipeCreateSerializer(ModelSerializer):
         amount_recipe_ingredients = []
         for ingredient in ingredients:
             amount_recipe_ingredients.append(
-                AmountRecipeIngredient(
-                    ingredients=ingredient['ingredient'],
+                AmountRecipeIngredients(
+                    ingredient=ingredient['ingredient'],
                     recipe=recipe,
                     amount=ingredient['amount']
                 )
             )
-        AmountRecipeIngredient.objects.bulk_create(amount_recipe_ingredients)
+        AmountRecipeIngredients.objects.bulk_create(amount_recipe_ingredients)
 
     @atomic
     def create(self, validated_data: dict) -> Recipe:
