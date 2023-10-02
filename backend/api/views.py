@@ -1,9 +1,9 @@
 from typing import Type
 
-from django.db.models import Prefetch
+# from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (AmountRecipeIngredient, Favorite, Ingredient,
+from recipes.models import (Favorite, Ingredient,
                             Recipe, ShoppingCart, Tag, User)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
