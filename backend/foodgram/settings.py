@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
-    'debug_toolbar',
     'api.apps.ApiConfig',
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
@@ -68,14 +67,14 @@ if DEBUG:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-    # INTERNAL_IPS = [
-    #     '127.0.0.1:8000',
-    # ]
-    # DEBUG_TOOLBAR_CONFIG = {
-    #     'SHOW_TOOLBAR_CALLBACK': lambda request: True,
-    # }
-    # MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
-    # INSTALLED_APPS = ['django_filters'] + INSTALLED_APPS
+    INTERNAL_IPS = [
+        '127.0.0.1:8000',
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    }
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+    INSTALLED_APPS = ['django_filters'] + INSTALLED_APPS
 else:
     DATABASES = {
         'default': {
