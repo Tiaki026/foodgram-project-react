@@ -38,15 +38,15 @@ class ShoppingCartFileGenerator:
             AmountRecipeIngredient.objects.filter(
                 recipe__in_shopping__user=self.user
             ).values(
-                'ingredients__name',
-                'ingredients__measurement_unit'
+                'ingredient__name',
+                'ingredient__measurement_unit'
             ).annotate(amount=Sum('amount'))
         )
         for ingredients in ingredient:
             shopping_cart.append(
-                f'{ingredients["ingredients__name"]}: '
+                f'{ingredients["ingredient__name"]}: '
                 f'{ingredients["amount"]} '
-                f'{ingredients["ingredients__measurement_unit"]}'
+                f'{ingredients["ingredient__measurement_unit"]}'
             )
         return shopping_cart
 

@@ -42,15 +42,16 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
     """Вьюсет рецептов."""
 
-    queryset = Recipe.objects.select_related('author').prefetch_related(
-        'tags',
-        Prefetch(
-            'recipe_amount',
-            queryset=AmountRecipeIngredient.objects.select_related(
-                'ingredient'
-            )
-        ),
-    ).order_by('-pub_date')
+    # queryset = Recipe.objects.select_related('author').prefetch_related(
+    #     'tags',
+    #     Prefetch(
+    #         'recipe_amount',
+    #         queryset=AmountRecipeIngredient.objects.select_related(
+    #             'ingredient'
+    #         )
+    #     ),
+    # )
+    queryset = Recipe.objects.all()
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
     pagination_class = CustomPagination
