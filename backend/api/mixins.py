@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from users.models import Subscription
 
-from .serializers import RecipeSerializer, SubscriptionSerializer
+from .serializers import RecipeSerializer
 
 
 class RecipeMixin:

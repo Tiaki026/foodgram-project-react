@@ -67,6 +67,14 @@ if DEBUG:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+    INTERNAL_IPS = [
+        '127.0.0.1:8000',
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    }
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+    INSTALLED_APPS = ['django_filters'] + INSTALLED_APPS
 else:
     DATABASES = {
         'default': {
@@ -98,7 +106,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
