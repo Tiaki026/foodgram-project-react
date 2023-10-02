@@ -6,7 +6,7 @@ from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (AmountRecipeIngredients, Ingredient, Recipe, Tag,
+from recipes.models import (AmountRecipeIngredient, Ingredient, Recipe, Tag,
                             User)
 from rest_framework import status
 from rest_framework.fields import IntegerField, SerializerMethodField
@@ -47,7 +47,7 @@ class RecipeSerializer(ModelSerializer):
     read_only_fields = ['__all__']
 
 
-class AmountRecipeIngredientsSerializer(ModelSerializer):
+class AmountRecipeIngredientSerializer(ModelSerializer):
     """Сериализатор количества ингредиентов."""
 
     id = PrimaryKeyRelatedField(
@@ -58,7 +58,7 @@ class AmountRecipeIngredientsSerializer(ModelSerializer):
     amount = IntegerField(write_only=True)
 
     class Meta:
-        model = AmountRecipeIngredients
+        model = AmountRecipeIngredient
         fields = ['id', 'recipe', 'amount']
 
 
@@ -164,7 +164,7 @@ class RecipeCreateSerializer(ModelSerializer):
     tags = PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
-    ingredients = AmountRecipeIngredientsSerializer(many=True)
+    ingredients = AmountRecipeIngredientSerializer(many=True)
 
     image = Base64ImageField(required=True, allow_null=False)
 
@@ -213,13 +213,13 @@ class RecipeCreateSerializer(ModelSerializer):
         amount_recipe_ingredients = []
         for ingredient in ingredients:
             amount_recipe_ingredients.append(
-                AmountRecipeIngredients(
+                AmountRecipeIngredient(
                     ingredients=ingredient['ingredient'],
                     recipe=recipe,
                     amount=ingredient['amount']
                 )
             )
-        AmountRecipeIngredients.objects.bulk_create(amount_recipe_ingredients)
+        AmountRecipeIngredient.objects.bulk_create(amount_recipe_ingredients)
 
     @atomic
     def create(self, validated_data: dict) -> Recipe:
@@ -301,6 +301,6 @@ class RecipeReadSerializer(ModelSerializer):
         """Получение ингредиентов."""
         ingredients = recipe.ingredients.values(
             'id', 'name', 'measurement_unit',
-            amount=F('ingredients_amount__amount')
+            amount=F('ingredient_amount__amount')
         )
         return ingredients

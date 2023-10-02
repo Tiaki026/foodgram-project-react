@@ -10,7 +10,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='123no_key321asf5674r84g5f6h4t84h2g
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1').split(',')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', False) == 'True' 
 
 CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS', default='localhost')]
 
@@ -22,12 +22,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
+    'debug_toolbar',
     'api.apps.ApiConfig',
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
     'rest_framework',
     'djoser',
-    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +67,14 @@ if DEBUG:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+    INTERNAL_IPS = [
+        '127.0.0.1:8000',
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    }
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+    INSTALLED_APPS = ['django_filters'] + INSTALLED_APPS
 else:
     DATABASES = {
         'default': {

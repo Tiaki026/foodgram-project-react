@@ -77,7 +77,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         related_name='recipes',
-        through='AmountRecipeIngredients',
+        through='AmountRecipeIngredient',
         verbose_name='Ингредиенты',
     )
     tags = models.ManyToManyField(
@@ -113,7 +113,7 @@ class Recipe(models.Model):
         return f'{self.name} {self.author.username}'
 
 
-class AmountRecipeIngredients(models.Model):
+class AmountRecipeIngredient(models.Model):
     """Количество ингредиентов в рецепте."""
 
     recipe = models.ForeignKey(
@@ -122,11 +122,11 @@ class AmountRecipeIngredients(models.Model):
         related_name='recipe_amount',
         verbose_name='Наименование рецептов',
     )
-    ingredients = models.ForeignKey(
+    ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='ingredients_amount',
-        verbose_name='Наименование ингредиентов',
+        related_name='ingredient_amount',
+        verbose_name='Наименование ингредиента',
     )
     amount = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1)],
@@ -137,11 +137,11 @@ class AmountRecipeIngredients(models.Model):
         verbose_name = 'Количество ингредиентов в рецепте'
         verbose_name_plural = 'Количество ингредиентов в рецептах'
         ordering = ['recipe']
-        unique_together = [('recipe', 'ingredients')]
+        unique_together = [('recipe', 'ingredient')]
 
     def __str__(self) -> str:
         return (
-            f'{self.amount} -> {self.ingredients.measurement_unit}'
+            f'{self.amount} -> {self.ingredient.measurement_unit}'
         )
 
 

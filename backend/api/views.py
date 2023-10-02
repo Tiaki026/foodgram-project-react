@@ -1,9 +1,10 @@
 from typing import Type
 
+from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart, Tag,
-                            User)
+from recipes.models import (AmountRecipeIngredient, Favorite, Ingredient,
+                            Recipe, ShoppingCart, Tag, User)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
@@ -43,9 +44,12 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeMixin):
 
     queryset = Recipe.objects.select_related('author').prefetch_related(
         'tags',
-        'recipe_amount__ingredients',
-        'in_favorited',
-        'in_shopping',
+        Prefetch(
+            'recipe_amount',
+            queryset=AmountRecipeIngredient.objects.select_related(
+                'ingredient'
+            )
+        ),
     ).order_by('-pub_date')
     permission_classes = [IsAdminOrOwnerOrReadOnly]
     filterset_class = RecipeFilter
