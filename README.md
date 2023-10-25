@@ -18,8 +18,6 @@
 - [:ledger: Заключение](https://github.com/Tiaki026/foodgram-project-react#ledger-заключение)
 - [Автор](https://github.com/Tiaki026/foodgram-project-react#автор)
 
-Для проверки диплома:
-  админ - admin \ Admin123 \ admin@admin.ru
   
 
 ## :page_with_curl: Описание
